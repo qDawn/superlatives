@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, boolean, integer, pgEnum } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2'
-import { users } from './users'
+import { user } from './auth'
 import { rooms } from './rooms'
 
 export const questionTypeEnum = pgEnum('question_type', [
@@ -12,7 +12,7 @@ export const questionTypeEnum = pgEnum('question_type', [
 export const questionSets = pgTable('question_sets', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   roomId: text('room_id').notNull().references(() => rooms.id),
-  createdBy: text('created_by').notNull().references(() => users.id),
+  createdBy: text('created_by').notNull().references(() => user.id),
   isLocked: boolean('is_locked').notNull().default(false),
   shuffleQuestions: boolean('shuffle_questions').notNull().default(false),
   lockedAt: timestamp('locked_at'),
@@ -34,7 +34,7 @@ export const questions = pgTable('questions', {
 
 export const questionSetPresets = pgTable('question_set_presets', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
-  createdBy: text('created_by').notNull().references(() => users.id),
+  createdBy: text('created_by').notNull().references(() => user.id),
   name: text('name').notNull(),
   isSystemPreset: boolean('is_system_preset').notNull().default(false),
   questionsJson: text('questions_json').notNull(),
