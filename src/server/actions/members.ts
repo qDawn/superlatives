@@ -7,6 +7,8 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { eq, and } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
+import { sendApprovalEmail } from '@/lib/email'
+import { user } from '@/server/db/schema/auth'
 
 export async function approveMember(formData: FormData) {
   const session = await auth.api.getSession({
@@ -39,6 +41,20 @@ export async function approveMember(formData: FormData) {
       displayName: member.displayName,
       sortOrder: 0,
     })
+  }
+
+  if (member) {
+    const memberUser = await db.query.user.findFirst({
+      where: eq(user.id, member.userId),
+    })
+    if (memberUser) {
+      await sendApprovalEmail({
+        to: memberUser.email,
+        displayName: member.displayName,
+        roomName: room.name,
+        roomSlug: room.slug,
+      }).catch(err => console.error('Failed to send approval email:', err))
+    }
   }
 
   revalidatePath(`/rooms/${room.slug}/manage/members`)
