@@ -6,9 +6,11 @@ import { useActionState } from 'react'
 export default function OpenRoomButton({
   roomId,
   roomStatus,
+  approvedMemberCount,
 }: {
   roomId: string
   roomStatus: string
+  approvedMemberCount: number
 }) {
   const [state, action, pending] = useActionState(openRoom, null)
 
@@ -31,6 +33,11 @@ export default function OpenRoomButton({
   return (
     <form action={action}>
       <input type="hidden" name="roomId" value={roomId} />
+      {approvedMemberCount === 0 && (
+        <p className="text-sm text-amber-600 mb-2">
+          No approved members yet. Members who join after opening will be added to the name list automatically.
+        </p>
+      )}
       {state?.error && (
         <p className="text-sm text-destructive mb-2">{state.error}</p>
       )}

@@ -2,9 +2,11 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { getRoomBySlug } from '@/server/queries/rooms'
+import { getRoomMembers } from '@/server/queries/members'
 import QuestionBuilder from './question-builder'
 import OpenRoomButton from './open-room-button'
 import CloseVotingButton from './close-voting-button'
+import CompletionCount from './completion-count'
 
 export default async function ManageQuestionsPage({
   params,
@@ -23,6 +25,9 @@ export default async function ManageQuestionsPage({
   if (!room) redirect('/dashboard')
   if (room.ownerId !== session.user.id) redirect('/dashboard')
 
+  const members = await getRoomMembers(room.id)
+  const approvedMemberCount = members.filter(m => m.status === 'approved').length
+
   return (
     <main className="mx-auto max-w-2xl px-4 py-12 space-y-8">
       <div className="space-y-1">
@@ -32,8 +37,13 @@ export default async function ManageQuestionsPage({
         </p>
       </div>
       <QuestionBuilder roomId={room.id} roomSlug={slug} />
-      <div className="flex gap-3">
-        <OpenRoomButton roomId={room.id} roomStatus={room.status} />
+      <CompletionCount roomId={room.id} roomStatus={room.status} />
+      <div className="flex gap-3 flex-wrap">
+        <OpenRoomButton
+          roomId={room.id}
+          roomStatus={room.status}
+          approvedMemberCount={approvedMemberCount}
+        />
         <CloseVotingButton roomId={room.id} roomSlug={slug} roomStatus={room.status} />
       </div>
     </main>

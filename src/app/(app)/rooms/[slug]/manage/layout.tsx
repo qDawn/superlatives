@@ -46,6 +46,12 @@ export default async function ManageLayout({
         >
           Members
         </Link>
+        <Link
+            href={`/rooms/${slug}/results`}
+            className="hover:text-foreground text-muted-foreground"
+        >
+            Results
+        </Link>
       </nav>
 
       {children}

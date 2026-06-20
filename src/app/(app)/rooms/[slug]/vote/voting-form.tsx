@@ -95,11 +95,43 @@ export default function VotingForm({
 
   if (submitted) {
     return (
-      <div className="space-y-4 text-center">
-        <h1 className="text-2xl font-medium">Votes submitted!</h1>
-        <p className="text-sm text-muted-foreground">
-          Results will be visible once the host closes voting.
-        </p>
+      <div className="space-y-6">
+        <div className="space-y-2 text-center">
+          <h1 className="text-2xl font-medium">Votes submitted!</h1>
+          <p className="text-sm text-muted-foreground">
+            Results will be visible once the host closes voting.
+          </p>
+        </div>
+        <div className="space-y-4">
+          <h2 className="text-sm font-medium">Your answers</h2>
+          {questions.map(q => {
+            const ans = answers[q.id] ?? []
+            return (
+              <div key={q.id} className="rounded-lg border px-4 py-3 space-y-1">
+                <p className="text-sm font-medium">{q.text}</p>
+                {ans.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">Skipped</p>
+                ) : q.questionType === 'group_combination' ? (
+                  <div className="space-y-1">
+                    {ans.map((key, i) => (
+                      <p key={i} className="text-xs text-muted-foreground">
+                        {key.split('|').map(id =>
+                          nameList.find(n => n.id === id)?.displayName ?? id
+                        ).join(' + ')}
+                      </p>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    {ans.map(id =>
+                      nameList.find(n => n.id === id)?.displayName ?? id
+                    ).join(', ')}
+                  </p>
+                )}
+              </div>
+            )
+          })}
+        </div>
       </div>
     )
   }

@@ -2,6 +2,7 @@
 
 import { db } from '@/server/db'
 import { roomMembers, rooms } from '@/server/db/schema/rooms'
+import { nameListEntries } from '@/server/db/schema/votes'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { eq, and } from 'drizzle-orm'
@@ -26,6 +27,19 @@ export async function approveMember(formData: FormData) {
     .update(roomMembers)
     .set({ status: 'approved', approvedAt: new Date() })
     .where(and(eq(roomMembers.id, memberId), eq(roomMembers.roomId, roomId)))
+
+  const member = await db.query.roomMembers.findFirst({
+    where: eq(roomMembers.id, memberId),
+  })
+
+  if (member && room.status === 'open') {
+    await db.insert(nameListEntries).values({
+      roomId,
+      memberId: member.id,
+      displayName: member.displayName,
+      sortOrder: 0,
+    })
+  }
 
   revalidatePath(`/rooms/${room.slug}/manage/members`)
 }
@@ -98,7 +112,23 @@ export async function joinRoom(_prevState: unknown, formData: FormData) {
     status,
   })
 
-  revalidatePath(`/rooms/${roomSlug}/manage/members`)
+  if (status === 'approved' && room.status === 'open') {
+    const newMember = await db.query.roomMembers.findFirst({
+      where: and(
+        eq(roomMembers.roomId, roomId),
+        eq(roomMembers.userId, session.user.id)
+      ),
+    })
+    if (newMember) {
+      await db.insert(nameListEntries).values({
+        roomId,
+        memberId: newMember.id,
+        displayName,
+        sortOrder: 0,
+      })
+    }
+  }
 
+  revalidatePath(`/rooms/${roomSlug}/manage/members`)
   return { success: true }
 }
