@@ -50,3 +50,9 @@ export async function getRoomForVoting(slug: string, userId: string) {
 
   return { room, member: member ?? null }
 }
+export async function getRoomById(id: string) {
+  const room = await db.query.rooms.findFirst({
+    where: eq(rooms.id, id),
+  })
+  return room ?? null
+}

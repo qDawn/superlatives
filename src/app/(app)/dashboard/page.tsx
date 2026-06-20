@@ -94,6 +94,14 @@ export default async function DashboardPage() {
           ))}
         </div>
       )}
+      <div className="pt-4 border-t">
+      <Link
+        href="/admin/dashboard"
+        className="text-xs text-muted-foreground hover:text-foreground"
+      >
+        Admin dashboard →
+      </Link>
+    </div>
     </main>
   )
 }
