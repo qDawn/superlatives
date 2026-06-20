@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from 'sonner'
 import { approveMember, denyMember } from '@/server/actions/members'
 
 type Member = {
@@ -23,18 +24,20 @@ export default function MemberList({
   const pending = members.filter(m => m.status === 'pending')
   const approved = members.filter(m => m.status === 'approved')
 
-  async function handleApprove(memberId: string) {
+  async function handleApprove(memberId: string, name: string) {
     const fd = new FormData()
     fd.set('memberId', memberId)
     fd.set('roomId', roomId)
     await approveMember(fd)
+    toast.success(`${name} approved`)
   }
 
-  async function handleDeny(memberId: string) {
+  async function handleDeny(memberId: string, name: string) {
     const fd = new FormData()
     fd.set('memberId', memberId)
     fd.set('roomId', roomId)
     await denyMember(fd)
+    toast.success(`${name} denied`)
   }
 
   return (
@@ -47,13 +50,13 @@ export default function MemberList({
               <span className="text-sm">{m.displayName}</span>
               <div className="flex gap-2">
                 <button
-                  onClick={() => handleApprove(m.id)}
+                  onClick={() => handleApprove(m.id, m.displayName)}
                   className="rounded-md bg-primary px-3 py-1 text-xs text-primary-foreground hover:bg-primary/90"
                 >
                   Approve
                 </button>
                 <button
-                  onClick={() => handleDeny(m.id)}
+                  onClick={() => handleDeny(m.id, m.displayName)}
                   className="rounded-md border px-3 py-1 text-xs hover:bg-accent"
                 >
                   Deny

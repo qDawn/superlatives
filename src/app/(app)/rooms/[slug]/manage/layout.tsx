@@ -25,7 +25,7 @@ export default async function ManageLayout({
   if (room.ownerId !== session.user.id) redirect('/dashboard')
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12 space-y-6">
+    <div className="mx-auto max-w-2xl px-4 py-8 space-y-6">
       <div className="space-y-1">
         <h1 className="text-2xl font-medium">{room.name}</h1>
         <p className="text-sm text-muted-foreground capitalize">
@@ -33,7 +33,7 @@ export default async function ManageLayout({
         </p>
       </div>
 
-      <nav className="flex gap-4 border-b pb-2 text-sm">
+      <nav className="flex gap-4 border-b pb-2 text-sm flex-wrap">
         <Link
           href={`/rooms/${slug}/manage/questions`}
           className="hover:text-foreground text-muted-foreground"
@@ -47,10 +47,10 @@ export default async function ManageLayout({
           Members
         </Link>
         <Link
-            href={`/rooms/${slug}/results`}
-            className="hover:text-foreground text-muted-foreground"
+          href={`/rooms/${slug}/results`}
+          className="hover:text-foreground text-muted-foreground"
         >
-            Results
+          Results
         </Link>
       </nav>
 

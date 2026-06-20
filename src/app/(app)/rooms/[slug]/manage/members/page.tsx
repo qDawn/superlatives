@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { getRoomBySlug } from '@/server/queries/rooms'
 import { getRoomMembers } from '@/server/queries/members'
 import MemberList from './member-list'
+import CopyLinkButton from './copy-link-button'
 
 export default async function MembersPage({
   params,
@@ -27,9 +28,10 @@ export default async function MembersPage({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border p-4 space-y-2">
+      <div className="rounded-lg border p-4 space-y-3">
         <p className="text-sm font-medium">Join link</p>
         <p className="text-sm text-muted-foreground break-all">{joinUrl}</p>
+        <CopyLinkButton url={joinUrl} />
       </div>
 
       <MemberList
