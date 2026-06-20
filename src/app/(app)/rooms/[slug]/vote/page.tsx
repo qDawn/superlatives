@@ -24,6 +24,12 @@ export default async function VotePage({
 
   const { room, member } = data
 
+  const isOwner = room.ownerId === session.user.id
+
+  if (isOwner) {
+    redirect(`/rooms/${slug}/manage/questions`)
+  }
+
   if (!member || member.status !== 'approved') {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center">

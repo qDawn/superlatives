@@ -7,6 +7,7 @@ import { db } from '@/server/db'
 import { roomMembers } from '@/server/db/schema/rooms'
 import { eq, and } from 'drizzle-orm'
 import ResultsCharts from './results-charts'
+import Link from 'next/link'
 
 export default async function ResultsPage({
   params,
@@ -27,11 +28,17 @@ export default async function ResultsPage({
   if (room.status !== 'closed') {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center">
-        <div className="w-full max-w-sm space-y-2 px-4 text-center">
+        <div className="w-full max-w-sm space-y-4 px-4 text-center">
           <h1 className="text-2xl font-medium">Results not available yet</h1>
           <p className="text-sm text-muted-foreground">
             The host hasn't closed voting yet.
           </p>
+          <Link
+            href={`/rooms/${slug}/vote`}
+            className="text-xs text-muted-foreground hover:text-foreground block"
+          >
+            ← Back to voting
+          </Link>
         </div>
       </main>
     )
@@ -62,6 +69,12 @@ export default async function ResultsPage({
   return (
     <main className="mx-auto max-w-2xl px-4 py-12 space-y-8">
       <div className="space-y-1">
+        <Link
+          href={`/rooms/${slug}/manage/questions`}
+          className="text-xs text-muted-foreground hover:text-foreground"
+        >
+          ← Back to room
+        </Link>
         <h1 className="text-2xl font-medium">{room.name} — Results</h1>
         <p className="text-sm text-muted-foreground">Voting is closed.</p>
       </div>

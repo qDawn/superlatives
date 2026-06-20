@@ -56,3 +56,16 @@ export async function getRoomById(id: string) {
   })
   return room ?? null
 }
+import { questionSets } from '@/server/db/schema/questions'
+
+export async function getRoomQuestions(roomId: string) {
+  const questionSet = await db.query.questionSets.findFirst({
+    where: eq(questionSets.roomId, roomId),
+    with: {
+      questions: {
+        orderBy: (q, { asc }) => [asc(q.displayOrder)],
+      },
+    },
+  })
+  return questionSet?.questions ?? []
+}

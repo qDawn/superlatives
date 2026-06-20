@@ -1,12 +1,13 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
-import { getRoomBySlug } from '@/server/queries/rooms'
+import { getRoomBySlug, getRoomQuestions } from '@/server/queries/rooms'
 import { getRoomMembers } from '@/server/queries/members'
 import QuestionBuilder from './question-builder'
 import OpenRoomButton from './open-room-button'
 import CloseVotingButton from './close-voting-button'
 import CompletionCount from './completion-count'
+import ExportImport from './export-import'
 
 export default async function ManageQuestionsPage({
   params,
@@ -27,6 +28,7 @@ export default async function ManageQuestionsPage({
 
   const members = await getRoomMembers(room.id)
   const approvedMemberCount = members.filter(m => m.status === 'approved').length
+  const existingQuestions = await getRoomQuestions(room.id)
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-12 space-y-8">
@@ -36,7 +38,13 @@ export default async function ManageQuestionsPage({
           Build your question set. Questions are locked once you open the room.
         </p>
       </div>
-      <QuestionBuilder roomId={room.id} roomSlug={slug} />
+      <ExportImport roomId={room.id} roomStatus={room.status} />
+      <QuestionBuilder
+        roomId={room.id}
+        roomSlug={slug}
+        roomStatus={room.status}
+        initialQuestions={existingQuestions}
+      />
       <CompletionCount roomId={room.id} roomStatus={room.status} />
       <div className="flex gap-3 flex-wrap">
         <OpenRoomButton
