@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { db } from '@/server/db'
-import { rooms } from '@/server/db/schema/rooms'
+import { rooms, roomMembers } from '@/server/db/schema/rooms'
 import { eq } from 'drizzle-orm'
 import Link from 'next/link'
 
@@ -17,6 +17,17 @@ export default async function DashboardPage() {
     where: eq(rooms.ownerId, session.user.id),
     orderBy: (rooms, { desc }) => [desc(rooms.createdAt)],
   })
+
+  const joinedMembers = await db.query.roomMembers.findMany({
+    where: eq(roomMembers.userId, session.user.id),
+    with: {
+      room: true,
+    },
+  })
+
+  const joinedRooms = joinedMembers
+    .filter(m => m.status === 'approved' && m.roomId !== undefined)
+    .filter(m => !myRooms.find(r => r.id === m.roomId))
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-12 space-y-8">
@@ -36,9 +47,7 @@ export default async function DashboardPage() {
       <div className="space-y-3">
         <h2 className="text-sm font-medium">Your rooms</h2>
         {myRooms.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            No rooms yet. Create one to get started.
-          </p>
+          <p className="text-sm text-muted-foreground">No rooms yet.</p>
         )}
         {myRooms.map(room => (
           <div
@@ -60,6 +69,31 @@ export default async function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {joinedRooms.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-sm font-medium">Rooms you've joined</h2>
+          {joinedRooms.map(m => (
+            <div
+              key={m.id}
+              className="flex items-center justify-between rounded-lg border px-4 py-3"
+            >
+              <div>
+                <p className="text-sm font-medium">{m.room.name}</p>
+                <p className="text-xs text-muted-foreground capitalize">
+                  {m.room.status}
+                </p>
+              </div>
+              <Link
+                href={`/rooms/${m.room.slug}/vote`}
+                className="rounded-md border px-3 py-1 text-xs hover:bg-accent"
+              >
+                {m.room.status === 'closed' ? 'Results' : 'Vote'}
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
     </main>
   )
 }

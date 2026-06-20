@@ -3,6 +3,8 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { getRoomBySlug } from '@/server/queries/rooms'
 import QuestionBuilder from './question-builder'
+import OpenRoomButton from './open-room-button'
+import CloseVotingButton from './close-voting-button'
 
 export default async function ManageQuestionsPage({
   params,
@@ -18,7 +20,6 @@ export default async function ManageQuestionsPage({
   if (!session) redirect('/login')
 
   const room = await getRoomBySlug(slug)
-
   if (!room) redirect('/dashboard')
   if (room.ownerId !== session.user.id) redirect('/dashboard')
 
@@ -31,6 +32,10 @@ export default async function ManageQuestionsPage({
         </p>
       </div>
       <QuestionBuilder roomId={room.id} roomSlug={slug} />
+      <div className="flex gap-3">
+        <OpenRoomButton roomId={room.id} roomStatus={room.status} />
+        <CloseVotingButton roomId={room.id} roomSlug={slug} roomStatus={room.status} />
+      </div>
     </main>
   )
 }

@@ -1,10 +1,13 @@
 'use server'
 
 import { db } from '@/server/db'
-import { rooms } from '@/server/db/schema/rooms'
+import { rooms, roomMembers } from '@/server/db/schema/rooms'
+import { nameListEntries } from '@/server/db/schema/votes'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
+import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 
 const createRoomSchema = z.object({
@@ -52,4 +55,62 @@ export async function createRoom(_prevState: unknown, formData: FormData) {
   }).returning()
 
   redirect(`/rooms/${room.slug}/manage/questions`)
+}
+export async function openRoom(_prevState: unknown, formData: FormData) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+  if (!session) return { error: 'Unauthorized' }
+
+  const roomId = formData.get('roomId') as string
+
+  const room = await db.query.rooms.findFirst({
+    where: eq(rooms.id, roomId),
+    with: {
+      roomMembers: {
+        where: (members, { eq: eqFn }) => eqFn(members.status, 'approved'),
+      },
+    },
+  })
+
+  if (!room || room.ownerId !== session.user.id) return { error: 'Unauthorized' }
+  if (room.status !== 'draft') return { error: 'Room already opened' }
+
+  await db.update(rooms)
+    .set({ status: 'open' })
+    .where(eq(rooms.id, roomId))
+
+  for (const member of room.roomMembers) {
+    await db.insert(nameListEntries).values({
+      roomId,
+      memberId: member.id,
+      displayName: member.displayName,
+      sortOrder: 0,
+    })
+  }
+
+  revalidatePath(`/rooms/${room.slug}/manage/questions`)
+  return { success: true }
+}
+export async function closeVoting(_prevState: unknown, formData: FormData) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+  if (!session) return { error: 'Unauthorized' }
+
+  const roomId = formData.get('roomId') as string
+
+  const room = await db.query.rooms.findFirst({
+    where: eq(rooms.id, roomId),
+  })
+
+  if (!room || room.ownerId !== session.user.id) return { error: 'Unauthorized' }
+  if (room.status !== 'open') return { error: 'Room is not open' }
+
+  await db.update(rooms)
+    .set({ status: 'closed', votingClosedAt: new Date() })
+    .where(eq(rooms.id, roomId))
+
+  revalidatePath(`/rooms/${room.slug}/manage/questions`)
+  return { success: true }
 }
