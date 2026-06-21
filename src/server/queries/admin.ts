@@ -14,7 +14,13 @@ export async function getAllRooms() {
   })
 }
 
-export async function getAnonymisedRoomResults(roomId: string) {
+export async function getAllUsers() {
+  return db.query.user.findMany({
+    orderBy: (u, { asc }) => [asc(u.createdAt)],
+  })
+}
+
+export async function getRoomResultsWithIdentities(roomId: string) {
   const nameList = await db.query.nameListEntries.findMany({
     where: eq(nameListEntries.roomId, roomId),
   })
@@ -30,14 +36,21 @@ export async function getAnonymisedRoomResults(roomId: string) {
 
   if (!questionSet) return null
 
-  const allVoters = await db.query.roomMembers.findMany({
+  const allMembers = await db.query.roomMembers.findMany({
     where: eq(roomMembers.roomId, roomId),
+    with: {
+      user: true,
+    },
   })
 
-  const voterMap: Record<string, string> = {}
-  allVoters.forEach((member, i) => {
-    voterMap[member.id] = `Participant ${String.fromCharCode(65 + i)}`
-  })
+  const memberMap: Record<string, { displayName: string; email: string; name: string }> = {}
+  for (const member of allMembers) {
+    memberMap[member.id] = {
+      displayName: member.displayName,
+      email: member.user?.email ?? 'unknown',
+      name: member.user?.name ?? 'unknown',
+    }
+  }
 
   const results = []
 
@@ -49,17 +62,24 @@ export async function getAnonymisedRoomResults(roomId: string) {
       },
     })
 
-    const anonymisedVotes = questionVotes.map(vote => ({
-      voter: voterMap[vote.voterMemberId] ?? 'Unknown',
-      selections: vote.voteSelections.map(sel => {
+    const voterDetails = questionVotes.map(vote => {
+      const voter = memberMap[vote.voterMemberId]
+      const selections = vote.voteSelections.map(sel => {
         const nameEntry = nameList.find(n => n.id === sel.nameEntryId)
         return nameEntry?.displayName ?? 'Unknown'
-      }),
-      groupAnswerIndex: vote.voteSelections[0]?.groupAnswerIndex,
-    }))
+      })
 
-    results.push({ question, anonymisedVotes })
+      return {
+        voterDisplayName: voter?.displayName ?? 'Unknown',
+        voterEmail: voter?.email ?? 'Unknown',
+        voterName: voter?.name ?? 'Unknown',
+        selections,
+        groupAnswerIndex: vote.voteSelections[0]?.groupAnswerIndex,
+      }
+    })
+
+    results.push({ question, voterDetails })
   }
 
-  return { results, voterMap }
+  return { results, memberMap }
 }
