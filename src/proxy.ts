@@ -6,8 +6,7 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/signup')
-  const isAppRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/rooms') || pathname.startsWith('/admin')
-
+  const isAppRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/rooms') || pathname.startsWith('/admin') || pathname.startsWith('/profile')
   if (!session && isAppRoute) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
