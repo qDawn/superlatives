@@ -3,6 +3,11 @@
 import { useState } from 'react'
 import { authClient } from '@/lib/auth-client'
 import Link from 'next/link'
+import { motion } from 'motion/react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -20,58 +25,58 @@ export default function ForgotPasswordPage() {
     setLoading(false)
   }
 
-  if (sent) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center">
-        <div className="w-full max-w-sm space-y-4 px-4 text-center">
-          <h1 className="text-2xl font-medium">Check your email</h1>
-          <p className="text-sm text-muted-foreground">
-            If an account exists for {email}, you'll receive a reset link shortly.
-          </p>
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground block">
-            ← Back to login
-          </Link>
-        </div>
-      </main>
-    )
-  }
-
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <div className="w-full max-w-sm space-y-6 px-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-medium">Forgot password</h1>
-          <p className="text-sm text-muted-foreground">
-            Enter your email and we'll send you a reset link.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label htmlFor="email" className="text-sm font-medium">Email</label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-          >
-            {loading ? 'Sending...' : 'Send reset link'}
-          </button>
-        </form>
-
-        <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground block text-center">
-          ← Back to login
-        </Link>
-      </div>
+    <main className="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="w-full max-w-sm"
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle>Forgot password</CardTitle>
+            <CardDescription>
+              {sent
+                ? `We sent a reset link to ${email} if an account exists.`
+                : "Enter your email and we'll send you a reset link."}
+            </CardDescription>
+          </CardHeader>
+          {!sent && (
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Sending...' : 'Send reset link'}
+                </Button>
+                <div className="text-center">
+                  <Link href="/login" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                    ← Back to login
+                  </Link>
+                </div>
+              </form>
+            </CardContent>
+          )}
+          {sent && (
+            <CardContent>
+              <div className="text-center">
+                <Link href="/login" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  ← Back to login
+                </Link>
+              </div>
+            </CardContent>
+          )}
+        </Card>
+      </motion.div>
     </main>
   )
 }

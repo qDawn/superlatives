@@ -1,24 +1,51 @@
+'use client'
+
 import Link from 'next/link'
+import { motion } from 'motion/react'
+import { Button } from '@/components/ui/button'
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4">
-      <h1 className="text-3xl font-medium">Superlatives</h1>
-      <p className="text-muted-foreground">A party game for everyone.</p>
-      <div className="flex gap-3">
-        <Link
-          href="/login"
-          className="rounded-md border px-4 py-2 text-sm hover:bg-accent"
+    <main className="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="text-center space-y-6 max-w-md"
+      >
+        <div className="space-y-3">
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl font-semibold tracking-tight"
+          >
+            Superlatives
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-muted-foreground text-lg"
+          >
+            The party game where everyone votes — and nobody knows who picked who.
+          </motion.p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+          className="flex gap-3 justify-center"
         >
-          Log in
-        </Link>
-        <Link
-          href="/signup"
-          className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
-        >
-          Sign up
-        </Link>
-      </div>
+          <Button asChild variant="outline" size="lg">
+            <Link href="/login">Log in</Link>
+          </Button>
+          <Button asChild size="lg">
+            <Link href="/signup">Get started</Link>
+          </Button>
+        </motion.div>
+      </motion.div>
     </main>
   )
 }

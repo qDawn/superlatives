@@ -4,6 +4,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { signIn } from '@/lib/auth-client'
+import { motion } from 'motion/react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -35,66 +40,57 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <div className="w-full max-w-sm space-y-6 px-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-medium">Welcome back</h1>
-          <p className="text-sm text-muted-foreground">
-            No account yet?{' '}
-            <Link href="/signup" className="underline underline-offset-4">
-              Sign up
-            </Link>
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="text-sm font-medium">
-                Password
-              </label>
-              <Link
-                href="/forgot-password"
-                className="text-xs text-muted-foreground hover:text-foreground"
-              >
-                Forgot password?
+    <main className="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="w-full max-w-sm"
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle>Welcome back</CardTitle>
+            <CardDescription>
+              No account yet?{' '}
+              <Link href="/signup" className="text-foreground underline underline-offset-4">
+                Sign up
               </Link>
-            </div>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-          >
-            {loading ? 'Logging in...' : 'Log in'}
-          </button>
-        </form>
-      </div>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" name="email" type="email" required />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <Input id="password" name="password" type="password" required />
+              </div>
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-sm text-destructive"
+                >
+                  {error}
+                </motion.p>
+              )}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Logging in...' : 'Log in'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </motion.div>
     </main>
   )
 }

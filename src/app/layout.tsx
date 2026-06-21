@@ -36,13 +36,13 @@ export default function RootLayout({
           </div>
           <footer className="border-t px-4 py-6 text-xs text-muted-foreground">
             <div className="mx-auto max-w-4xl flex items-center justify-between">
-              <span>Superlatives</span>
-              <Link href="/about" className="hover:text-foreground">
+              <span className="font-medium">Superlatives</span>
+              <Link href="/about" className="hover:text-foreground transition-colors">
                 About & Privacy
               </Link>
             </div>
           </footer>
-          <Toaster position="bottom-right" />
+          <Toaster position="bottom-right" richColors />
         </ThemeProvider>
       </body>
     </html>
