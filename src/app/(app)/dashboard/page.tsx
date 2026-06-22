@@ -5,6 +5,9 @@ import { db } from '@/server/db'
 import { rooms, roomMembers } from '@/server/db/schema/rooms'
 import { eq } from 'drizzle-orm'
 import Link from 'next/link'
+import { buttonVariants } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -16,146 +19,121 @@ export default async function DashboardPage() {
   const myRooms = await db.query.rooms.findMany({
     where: eq(rooms.ownerId, session.user.id),
     orderBy: (rooms, { desc }) => [desc(rooms.createdAt)],
-    with: {
-      roomMembers: true,
-    },
+    with: { roomMembers: true },
   })
 
   const joinedMembers = await db.query.roomMembers.findMany({
     where: eq(roomMembers.userId, session.user.id),
-    with: {
-      room: true,
-    },
+    with: { room: true },
   })
 
   const joinedRooms = joinedMembers
     .filter(m => m.status === 'approved' && !myRooms.find(r => r.id === m.roomId))
 
+  function StatusBadge({ status }: { status: string }) {
+    if (status === 'open') return <Badge className="bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20">Voting open</Badge>
+    if (status === 'closed') return <Badge className="bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20">Closed</Badge>
+    return <Badge variant="outline">Draft</Badge>
+  }
+
   return (
-    <main className="mx-auto max-w-2xl px-4 py-12 space-y-8">
+    <main className="mx-auto max-w-2xl px-4 py-10 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-medium">Welcome, {session.user.name}</h1>
-          <p className="text-sm text-muted-foreground">{session.user.email}</p>
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{session.user.email}</p>
         </div>
         <div className="flex gap-2">
-          <Link
-            href="/profile"
-            className="rounded-md border px-4 py-2 text-sm hover:bg-accent"
-          >
+          <Link href="/profile" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
             Profile
           </Link>
-          <Link
-            href="/rooms/new"
-            className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
-          >
+          <Link href="/rooms/new" className={buttonVariants({ size: 'sm' })}>
             Create room
           </Link>
         </div>
       </div>
 
       <div className="space-y-3">
-        <h2 className="text-sm font-medium">Your rooms</h2>
+        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Your rooms</h2>
         {myRooms.length === 0 && (
-          <p className="text-sm text-muted-foreground">No rooms yet. Create one to get started.</p>
+          <Card>
+            <CardContent className="py-8 text-center">
+              <p className="text-sm text-muted-foreground">No rooms yet.</p>
+              <Link href="/rooms/new" className={buttonVariants({ size: 'sm', className: 'mt-4 inline-flex' })}>
+                Create your first room
+              </Link>
+            </CardContent>
+          </Card>
         )}
         {myRooms.map(room => {
           const approved = room.roomMembers.filter(m => m.status === 'approved').length
           const pending = room.roomMembers.filter(m => m.status === 'pending').length
-          const statusLabel = room.status === 'draft'
-            ? 'Draft'
-            : room.status === 'open'
-            ? 'Voting open'
-            : 'Voting closed'
-          const statusColor = room.status === 'draft'
-            ? 'text-muted-foreground'
-            : room.status === 'open'
-            ? 'text-green-600'
-            : 'text-blue-600'
-
           return (
-            <div
-              key={room.id}
-              className="rounded-lg border px-4 py-3 space-y-2"
-            >
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium">{room.name}</p>
-                <Link
-                  href={`/rooms/${room.slug}/manage/questions`}
-                  className="rounded-md border px-3 py-1 text-xs hover:bg-accent"
-                >
-                  Manage
-                </Link>
-              </div>
-              <div className="flex gap-3 text-xs text-muted-foreground flex-wrap">
-                <span className={statusColor}>{statusLabel}</span>
-                <span>{approved} member{approved !== 1 ? 's' : ''}</span>
-                {pending > 0 && (
-                  <span className="text-amber-600">{pending} pending approval</span>
-                )}
-                {room.status === 'closed' && (
-                  <Link
-                    href={`/rooms/${room.slug}/results`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    View results →
+            <Card key={room.id} className="hover:bg-accent/30 transition-colors">
+              <CardContent className="py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="space-y-1.5 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-medium">{room.name}</p>
+                      <StatusBadge status={room.status} />
+                      {pending > 0 && (
+                        <Badge variant="outline" className="text-amber-600 border-amber-300">
+                          {pending} pending
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <span>{approved} member{approved !== 1 ? 's' : ''}</span>
+                      {room.status === 'closed' && (
+                        <Link href={`/rooms/${room.slug}/results`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                          View results →
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                  <Link href={`/rooms/${room.slug}/manage/questions`} className={buttonVariants({ variant: 'outline', size: 'sm' }) + ' shrink-0'}>
+                    Manage
                   </Link>
-                )}
-              </div>
-            </div>
+                </div>
+              </CardContent>
+            </Card>
           )
         })}
       </div>
 
       {joinedRooms.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-sm font-medium">Rooms you've joined</h2>
-          {joinedRooms.map(m => {
-            const statusLabel = m.room.status === 'draft'
-              ? 'Not open yet'
-              : m.room.status === 'open'
-              ? 'Voting open'
-              : 'Voting closed'
-            const statusColor = m.room.status === 'draft'
-              ? 'text-muted-foreground'
-              : m.room.status === 'open'
-              ? 'text-green-600'
-              : 'text-blue-600'
-
-            return (
-              <div
-                key={m.id}
-                className="rounded-lg border px-4 py-3 space-y-2"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium">{m.room.name}</p>
+          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Rooms you've joined</h2>
+          {joinedRooms.map(m => (
+            <Card key={m.id} className="hover:bg-accent/30 transition-colors">
+              <CardContent className="py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-medium">{m.room.name}</p>
+                      <StatusBadge status={m.room.status} />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {m.room.status === 'open' && 'Voting is open — go cast your votes'}
+                      {m.room.status === 'closed' && 'Voting has closed — results available'}
+                      {m.room.status === 'draft' && 'Waiting for host to open voting'}
+                    </p>
+                  </div>
                   <Link
-                    href={m.room.status === 'closed'
-                      ? `/rooms/${m.room.slug}/results`
-                      : `/rooms/${m.room.slug}/vote`
-                    }
-                    className="rounded-md border px-3 py-1 text-xs hover:bg-accent"
+                    href={m.room.status === 'closed' ? `/rooms/${m.room.slug}/results` : `/rooms/${m.room.slug}/vote`}
+                    className={buttonVariants({ variant: 'outline', size: 'sm' }) + ' shrink-0'}
                   >
                     {m.room.status === 'closed' ? 'Results' : 'Vote'}
                   </Link>
                 </div>
-                <div className="flex gap-3 text-xs flex-wrap">
-                  <span className={statusColor}>{statusLabel}</span>
-                  {m.room.status === 'open' && (
-                    <span className="text-muted-foreground">Voting is open — go cast your votes</span>
-                  )}
-                </div>
-              </div>
-            )
-          })}
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
 
-      <div className="pt-4 border-t">
-        <Link
-          href="/admin/dashboard"
-          className="text-xs text-muted-foreground hover:text-foreground"
-        >
+      <div className="pt-2 border-t">
+        <Link href="/admin/dashboard" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
           Admin dashboard →
         </Link>
       </div>

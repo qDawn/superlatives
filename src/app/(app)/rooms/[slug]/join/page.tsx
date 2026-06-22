@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { getRoomBySlug } from '@/server/queries/rooms'
 import JoinForm from './join-form'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default async function JoinRoomPage({
   params,
@@ -21,15 +22,19 @@ export default async function JoinRoomPage({
   if (!room) redirect('/dashboard')
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <div className="w-full max-w-sm space-y-6 px-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-medium">Join {room.name}</h1>
-          <p className="text-sm text-muted-foreground">
-            Choose a display name. This is the name others will vote for.
-          </p>
-        </div>
-        <JoinForm roomId={room.id} roomSlug={slug} joinMode={room.joinMode} />
+    <main className="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        <Card>
+          <CardHeader>
+            <CardTitle>Join {room.name}</CardTitle>
+            <CardDescription>
+              Choose a display name. This is the name others will vote for.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <JoinForm roomId={room.id} roomSlug={slug} joinMode={room.joinMode} />
+          </CardContent>
+        </Card>
       </div>
     </main>
   )

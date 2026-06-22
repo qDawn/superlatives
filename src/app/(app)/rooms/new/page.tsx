@@ -2,63 +2,68 @@
 
 import { useActionState } from 'react'
 import { createRoom } from '@/server/actions/rooms'
+import { motion } from 'motion/react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function NewRoomPage() {
   const [state, action, pending] = useActionState(createRoom, null)
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <div className="w-full max-w-sm space-y-6 px-4">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-medium">Create a room</h1>
-          <p className="text-sm text-muted-foreground">
-            Set up your superlatives game.
-          </p>
-        </div>
-
-        <form action={action} className="space-y-4">
-          <div className="space-y-1">
-            <label htmlFor="name" className="text-sm font-medium">
-              Room name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              maxLength={100}
-              placeholder="e.g. Office Party 2026"
-              className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label htmlFor="joinMode" className="text-sm font-medium">
-              Who can join?
-            </label>
-            <select
-              id="joinMode"
-              name="joinMode"
-              className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="auto">Anyone with the link</option>
-              <option value="manual">Requires my approval</option>
-            </select>
-          </div>
-
-          {state?.error && (
-            <p className="text-sm text-destructive">{state.error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={pending}
-            className="w-full rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-          >
-            {pending ? 'Creating...' : 'Create room'}
-          </button>
-        </form>
-      </div>
+    <main className="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="w-full max-w-sm"
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle>Create a room</CardTitle>
+            <CardDescription>Set up your superlatives game.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form action={action} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Room name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  maxLength={100}
+                  placeholder="e.g. Office Party 2026"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="joinMode">Who can join?</Label>
+                <select
+                  id="joinMode"
+                  name="joinMode"
+                  className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <option value="auto">Anyone with the link</option>
+                  <option value="manual">Requires my approval</option>
+                </select>
+              </div>
+              {state?.error && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-sm text-destructive"
+                >
+                  {state.error}
+                </motion.p>
+              )}
+              <Button type="submit" className="w-full" disabled={pending}>
+                {pending ? 'Creating...' : 'Create room'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </motion.div>
     </main>
   )
 }

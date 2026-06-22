@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { motion } from 'motion/react'
-import { Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 
 export default function Home() {
   return (
@@ -38,12 +38,12 @@ export default function Home() {
           transition={{ duration: 0.4, delay: 0.3 }}
           className="flex gap-3 justify-center"
         >
-          <Button asChild variant="outline" size="lg">
-            <Link href="/login">Log in</Link>
-          </Button>
-          <Button asChild size="lg">
-            <Link href="/signup">Get started</Link>
-          </Button>
+          <Link href="/login" className={buttonVariants({ variant: 'outline', size: 'lg' })}>
+            Log in
+          </Link>
+          <Link href="/signup" className={buttonVariants({ size: 'lg' })}>
+            Get started
+          </Link>
         </motion.div>
       </motion.div>
     </main>
