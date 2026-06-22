@@ -2,6 +2,10 @@
 
 import { toast } from 'sonner'
 import { approveMember, denyMember } from '@/server/actions/members'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { motion, AnimatePresence } from 'motion/react'
 
 type Member = {
   id: string
@@ -42,44 +46,73 @@ export default function MemberList({
 
   return (
     <div className="space-y-6">
-      {joinMode === 'manual' && pending.length > 0 && (
-        <div className="space-y-2">
-          <h2 className="text-sm font-medium">Pending approval ({pending.length})</h2>
-          {pending.map(m => (
-            <div key={m.id} className="flex items-center justify-between rounded-md border px-4 py-3">
-              <span className="text-sm">{m.displayName}</span>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleApprove(m.id, m.displayName)}
-                  className="rounded-md bg-primary px-3 py-1 text-xs text-primary-foreground hover:bg-primary/90"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleDeny(m.id, m.displayName)}
-                  className="rounded-md border px-3 py-1 text-xs hover:bg-accent"
-                >
-                  Deny
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {joinMode === 'manual' && pending.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="space-y-3"
+          >
+            <h2 className="text-sm font-medium">
+              Pending approval{' '}
+              <Badge variant="outline" className="text-amber-600 border-amber-300 ml-1">
+                {pending.length}
+              </Badge>
+            </h2>
+            {pending.map(m => (
+              <Card key={m.id}>
+                <CardContent className="py-3 flex items-center justify-between gap-3">
+                  <span className="text-sm font-medium">{m.displayName}</span>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => handleApprove(m.id, m.displayName)}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDeny(m.id, m.displayName)}
+                    >
+                      Deny
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         <h2 className="text-sm font-medium">
-          Approved members ({approved.length})
+          Approved members{' '}
+          <span className="text-muted-foreground font-normal">({approved.length})</span>
         </h2>
         {approved.length === 0 && (
           <p className="text-sm text-muted-foreground">No approved members yet.</p>
         )}
-        {approved.map(m => (
-          <div key={m.id} className="flex items-center justify-between rounded-md border px-4 py-3">
-            <span className="text-sm">{m.displayName}</span>
-            <span className="text-xs text-muted-foreground">Approved</span>
-          </div>
-        ))}
+        <AnimatePresence>
+          {approved.map(m => (
+            <motion.div
+              key={m.id}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              <Card>
+                <CardContent className="py-3 flex items-center justify-between gap-3">
+                  <span className="text-sm">{m.displayName}</span>
+                  <Badge variant="outline" className="text-green-600 border-green-300">
+                    Approved
+                  </Badge>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </div>
   )

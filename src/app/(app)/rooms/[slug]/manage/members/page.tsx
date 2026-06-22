@@ -5,6 +5,7 @@ import { getRoomBySlug } from '@/server/queries/rooms'
 import { getRoomMembers } from '@/server/queries/members'
 import MemberList from './member-list'
 import CopyLinkButton from './copy-link-button'
+import { Card, CardContent } from '@/components/ui/card'
 
 export default async function MembersPage({
   params,
@@ -28,11 +29,15 @@ export default async function MembersPage({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border p-4 space-y-3">
-        <p className="text-sm font-medium">Join link</p>
-        <p className="text-sm text-muted-foreground break-all">{joinUrl}</p>
-        <CopyLinkButton url={joinUrl} />
-      </div>
+      <Card>
+        <CardContent className="py-4 space-y-3">
+          <p className="text-sm font-medium">Join link</p>
+          <p className="text-sm text-muted-foreground break-all font-mono bg-muted px-3 py-2 rounded-md">
+            {joinUrl}
+          </p>
+          <CopyLinkButton url={joinUrl} />
+        </CardContent>
+      </Card>
 
       <MemberList
         members={members}

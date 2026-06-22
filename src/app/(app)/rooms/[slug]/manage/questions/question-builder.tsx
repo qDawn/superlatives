@@ -3,6 +3,12 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { addQuestion, deleteQuestion, editQuestion } from '@/server/actions/questions'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { motion, AnimatePresence } from 'motion/react'
 
 type QuestionType = 'single_select' | 'multi_select' | 'group_combination'
 
@@ -124,188 +130,168 @@ export default function QuestionBuilder({
   return (
     <div className="space-y-6">
       {!isLocked && (
-        <div className="space-y-4 rounded-lg border p-4">
-          <h2 className="text-sm font-medium">Add a question</h2>
+        <Card>
+          <CardContent className="pt-4 space-y-4">
+            <h2 className="text-sm font-medium">Add a question</h2>
 
-          <div className="space-y-1">
-            <label className="text-sm">Question text</label>
-            <input
-              value={text}
-              onChange={e => setText(e.target.value)}
-              placeholder="e.g. Most likely to be late to their own wedding"
-              className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-sm">Question type</label>
-            <select
-              value={questionType}
-              onChange={e => {
-                const val = e.target.value as QuestionType
-                setQuestionType(val)
-                if (val === 'single_select') setMaxSelections(1)
-              }}
-              className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="single_select">Single select (pick 1)</option>
-              <option value="multi_select">Multi select (pick many)</option>
-              <option value="group_combination">Group / duo / trio</option>
-            </select>
-          </div>
-
-          {questionType !== 'single_select' && (
-            <div className="space-y-1">
-              <label className="text-sm">
-                {questionType === 'group_combination' ? 'Group size' : 'Max selections'}
-              </label>
-              <input
-                type="number"
-                min={2}
-                max={20}
-                value={maxSelections}
-                onChange={e => setMaxSelections(Number(e.target.value))}
-                className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+            <div className="space-y-2">
+              <Label>Question text</Label>
+              <Input
+                value={text}
+                onChange={e => setText(e.target.value)}
+                placeholder="e.g. Most likely to be late to their own wedding"
               />
             </div>
-          )}
 
-          {questionType === 'group_combination' && (
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={allowMultipleGroupAnswers}
-                onChange={e => setAllowMultipleGroupAnswers(e.target.checked)}
-              />
-              Allow multiple group answers
-            </label>
-          )}
+            <div className="space-y-2">
+              <Label>Question type</Label>
+              <select
+                value={questionType}
+                onChange={e => {
+                  const val = e.target.value as QuestionType
+                  setQuestionType(val)
+                  if (val === 'single_select') setMaxSelections(1)
+                }}
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option value="single_select">Single select (pick 1)</option>
+                <option value="multi_select">Multi select (pick many)</option>
+                <option value="group_combination">Group / duo / trio</option>
+              </select>
+            </div>
 
-          <div className="flex gap-4 flex-wrap">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={isSkippable}
-                onChange={e => setIsSkippable(e.target.checked)}
-              />
-              Skippable
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={shuffleOptions}
-                onChange={e => setShuffleOptions(e.target.checked)}
-              />
-              Shuffle name order
-            </label>
-          </div>
+            {questionType !== 'single_select' && (
+              <div className="space-y-2">
+                <Label>{questionType === 'group_combination' ? 'Group size' : 'Max selections'}</Label>
+                <Input
+                  type="number"
+                  min={2}
+                  max={20}
+                  value={maxSelections}
+                  onChange={e => setMaxSelections(Number(e.target.value))}
+                />
+              </div>
+            )}
 
-          <button
-            onClick={handleAdd}
-            disabled={loading || !text.trim()}
-            className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-          >
-            {loading ? 'Adding...' : 'Add question'}
-          </button>
-        </div>
+            <div className="flex gap-4 flex-wrap">
+              {questionType === 'group_combination' && (
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={allowMultipleGroupAnswers}
+                    onChange={e => setAllowMultipleGroupAnswers(e.target.checked)}
+                  />
+                  Allow multiple group answers
+                </label>
+              )}
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isSkippable}
+                  onChange={e => setIsSkippable(e.target.checked)}
+                />
+                Skippable
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={shuffleOptions}
+                  onChange={e => setShuffleOptions(e.target.checked)}
+                />
+                Shuffle name order
+              </label>
+            </div>
+
+            <Button
+              onClick={handleAdd}
+              disabled={loading || !text.trim()}
+              size="sm"
+            >
+              {loading ? 'Adding...' : 'Add question'}
+            </Button>
+          </CardContent>
+        </Card>
       )}
 
       {questions.length > 0 && (
-        <div className="space-y-2">
-          <h2 className="text-sm font-medium">Questions ({questions.length})</h2>
-          {questions.map((q, i) => (
-            <div key={q.id} className="rounded-md border px-4 py-3 text-sm space-y-2">
-              {editingId === q.id ? (
-                <div className="space-y-3">
-                  <input
-                    value={editText}
-                    onChange={e => setEditText(e.target.value)}
-                    className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-                  />
-                  <div className="space-y-1">
-                    <label className="text-xs text-muted-foreground">Max selections</label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={20}
-                      value={editMax}
-                      onChange={e => setEditMax(Number(e.target.value))}
-                      className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-                    />
-                  </div>
-                  <div className="flex gap-4 flex-wrap">
-                    <label className="flex items-center gap-2 text-xs">
-                      <input
-                        type="checkbox"
-                        checked={editSkippable}
-                        onChange={e => setEditSkippable(e.target.checked)}
-                      />
-                      Skippable
-                    </label>
-                    <label className="flex items-center gap-2 text-xs">
-                      <input
-                        type="checkbox"
-                        checked={editShuffle}
-                        onChange={e => setEditShuffle(e.target.checked)}
-                      />
-                      Shuffle
-                    </label>
-                    <label className="flex items-center gap-2 text-xs">
-                      <input
-                        type="checkbox"
-                        checked={editMultiGroup}
-                        onChange={e => setEditMultiGroup(e.target.checked)}
-                      />
-                      Multiple group answers
-                    </label>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(q.id)}
-                      className="rounded-md bg-primary px-3 py-1 text-xs text-primary-foreground hover:bg-primary/90"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={() => setEditingId(null)}
-                      className="rounded-md border px-3 py-1 text-xs hover:bg-accent"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-start justify-between gap-2">
-                  <div className="space-y-1">
-                    <p className="font-medium">{i + 1}. {q.text}</p>
-                    <p className="text-muted-foreground text-xs">
-                      {q.questionType === 'single_select' && 'Single select'}
-                      {q.questionType === 'multi_select' && `Multi select — max ${q.maxSelections}`}
-                      {q.questionType === 'group_combination' && `Group of ${q.maxSelections}`}
-                      {q.isSkippable && ' · Skippable'}
-                      {q.shuffleOptions && ' · Shuffled'}
-                    </p>
-                  </div>
-                  {!isLocked && (
-                    <div className="flex gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => startEdit(q)}
-                        className="rounded-md border px-2 py-1 text-xs hover:bg-accent"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(q.id)}
-                        className="rounded-md border border-destructive text-destructive px-2 py-1 text-xs hover:bg-destructive hover:text-destructive-foreground"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
+        <div className="space-y-3">
+          <h2 className="text-sm font-medium">
+            Questions{' '}
+            <span className="text-muted-foreground font-normal">({questions.length})</span>
+          </h2>
+          <AnimatePresence>
+            {questions.map((q, i) => (
+              <motion.div
+                key={q.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -8 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Card>
+                  <CardContent className="py-3">
+                    {editingId === q.id ? (
+                      <div className="space-y-3">
+                        <Input
+                          value={editText}
+                          onChange={e => setEditText(e.target.value)}
+                        />
+                        <div className="space-y-2">
+                          <Label className="text-xs text-muted-foreground">Max selections</Label>
+                          <Input
+                            type="number"
+                            min={1}
+                            max={20}
+                            value={editMax}
+                            onChange={e => setEditMax(Number(e.target.value))}
+                          />
+                        </div>
+                        <div className="flex gap-4 flex-wrap">
+                          <label className="flex items-center gap-2 text-xs cursor-pointer">
+                            <input type="checkbox" checked={editSkippable} onChange={e => setEditSkippable(e.target.checked)} />
+                            Skippable
+                          </label>
+                          <label className="flex items-center gap-2 text-xs cursor-pointer">
+                            <input type="checkbox" checked={editShuffle} onChange={e => setEditShuffle(e.target.checked)} />
+                            Shuffle
+                          </label>
+                          <label className="flex items-center gap-2 text-xs cursor-pointer">
+                            <input type="checkbox" checked={editMultiGroup} onChange={e => setEditMultiGroup(e.target.checked)} />
+                            Multiple group answers
+                          </label>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={() => handleEdit(q.id)}>Save</Button>
+                          <Button size="sm" variant="outline" onClick={() => setEditingId(null)}>Cancel</Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="space-y-1.5 min-w-0">
+                          <p className="text-sm font-medium">{i + 1}. {q.text}</p>
+                          <div className="flex gap-1.5 flex-wrap">
+                            <Badge variant="outline" className="text-xs">
+                              {q.questionType === 'single_select' && 'Single select'}
+                              {q.questionType === 'multi_select' && `Multi select · max ${q.maxSelections}`}
+                              {q.questionType === 'group_combination' && `Group of ${q.maxSelections}`}
+                            </Badge>
+                            {q.isSkippable && <Badge variant="outline" className="text-xs">Skippable</Badge>}
+                            {q.shuffleOptions && <Badge variant="outline" className="text-xs">Shuffled</Badge>}
+                          </div>
+                        </div>
+                        {!isLocked && (
+                          <div className="flex gap-2 shrink-0">
+                            <Button size="sm" variant="outline" onClick={() => startEdit(q)}>Edit</Button>
+                            <Button size="sm" variant="destructive" onClick={() => handleDelete(q.id)}>Delete</Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
     </div>
