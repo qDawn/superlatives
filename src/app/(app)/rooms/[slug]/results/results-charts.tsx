@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { motion, AnimatePresence } from 'motion/react'
 
 type TallyEntry = {
@@ -20,8 +21,10 @@ type QuestionResult = {
 
 export default function ResultsCharts({
   results,
+  myVotes = {},
 }: {
   results: QuestionResult[]
+  myVotes?: Record<string, string[]>
 }) {
   const [chartType, setChartType] = useState<'bar' | 'pie'>('bar')
 
@@ -44,47 +47,60 @@ export default function ResultsCharts({
         </Button>
       </div>
 
-      {results.map(({ question, tally }, idx) => (
-        <motion.div
-          key={question.id}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: idx * 0.05 }}
-        >
-          <Card>
-            <CardContent className="pt-4 space-y-4">
-              <p className="font-medium text-sm">{question.text}</p>
-              {tally.length === 0 ? (
-                <p className="text-xs text-muted-foreground">No votes.</p>
-              ) : (
-                <AnimatePresence mode="wait">
-                  {chartType === 'bar' ? (
-                    <motion.div
-                      key="bar"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <BarChart tally={tally} />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="pie"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <PieChart tally={tally} />
-                    </motion.div>
+      {results.map(({ question, tally }, idx) => {
+        const myAnswer = myVotes[question.id]
+        return (
+          <motion.div
+            key={question.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.05 }}
+          >
+            <Card>
+              <CardContent className="pt-4 space-y-4">
+                <div className="space-y-1">
+                  <p className="font-medium text-sm">{question.text}</p>
+                  {myAnswer && myAnswer.length > 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      You voted: <span className="text-foreground font-medium">{myAnswer.join(', ')}</span>
+                    </p>
                   )}
-                </AnimatePresence>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
+                  {myAnswer && myAnswer.length === 0 && (
+                    <p className="text-xs text-muted-foreground italic">You skipped this question</p>
+                  )}
+                </div>
+                {tally.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No votes.</p>
+                ) : (
+                  <AnimatePresence mode="wait">
+                    {chartType === 'bar' ? (
+                      <motion.div
+                        key="bar"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <BarChart tally={tally} />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="pie"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <PieChart tally={tally} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )
+      })}
     </div>
   )
 }

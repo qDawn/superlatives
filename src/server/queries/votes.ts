@@ -3,6 +3,33 @@ import { nameListEntries, votes, voteSelections } from '@/server/db/schema/votes
 import { eq, and, inArray } from 'drizzle-orm'
 import { questions, questionSets } from '@/server/db/schema/questions'
 import { rooms } from '@/server/db/schema/rooms'
+import { resultViews } from '@/server/db/schema/votes'
+import { createId } from '@paralleldrive/cuid2'
+
+export async function recordResultView(roomId: string, userId: string) {
+  const existing = await db.query.resultViews.findFirst({
+    where: and(
+      eq(resultViews.roomId, roomId),
+      eq(resultViews.userId, userId)
+    ),
+  })
+
+  if (!existing) {
+    await db.insert(resultViews).values({
+      id: createId(),
+      roomId,
+      userId,
+    })
+  }
+}
+
+export async function hasResultBeenViewed(roomId: string) {
+  const view = await db.query.resultViews.findFirst({
+    where: eq(resultViews.roomId, roomId),
+  })
+  return !!view
+}
+
 
 export async function getNameList(roomId: string) {
   return db.query.nameListEntries.findMany({

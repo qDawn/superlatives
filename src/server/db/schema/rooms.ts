@@ -14,6 +14,9 @@ export const rooms = pgTable('rooms', {
   status: roomStatusEnum('status').notNull().default('draft'),
   votingClosedAt: timestamp('voting_closed_at'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
+  ownerParticipates: boolean('owner_participates').notNull().default(false),
+  joinLocked: boolean('join_locked').notNull().default(false),
+  votingReopenedAt: timestamp('voting_reopened_at'),
 })
 
 export const memberStatusEnum = pgEnum('member_status', ['pending', 'approved', 'denied'])

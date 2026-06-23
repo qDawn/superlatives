@@ -26,7 +26,7 @@ export default async function VotePage({
 
   const isOwner = room.ownerId === session.user.id
 
-  if (isOwner) {
+  if (isOwner && !room.ownerParticipates) {
     redirect(`/rooms/${slug}/manage/questions`)
   }
 

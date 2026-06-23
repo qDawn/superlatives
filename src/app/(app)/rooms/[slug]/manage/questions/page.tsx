@@ -8,6 +8,8 @@ import OpenRoomButton from './open-room-button'
 import CloseVotingButton from './close-voting-button'
 import CompletionCount from './completion-count'
 import ExportImport from './export-import'
+import OwnerParticipationToggle from './owner-participation-toggle'
+import ReopenVotingButton from './reopen-voting-button'
 
 export default async function ManageQuestionsPage({
   params,
@@ -31,21 +33,31 @@ export default async function ManageQuestionsPage({
   const existingQuestions = await getRoomQuestions(room.id)
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-12 space-y-8">
+    <main className="mx-auto max-w-2xl px-4 py-10 space-y-8">
       <div className="space-y-1">
-        <h1 className="text-2xl font-medium">{room.name}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{room.name}</h1>
         <p className="text-sm text-muted-foreground">
           Build your question set. Questions are locked once you open the room.
         </p>
       </div>
+
+      <OwnerParticipationToggle
+        roomId={room.id}
+        ownerParticipates={room.ownerParticipates}
+        roomStatus={room.status}
+      />
+
       <ExportImport roomId={room.id} roomStatus={room.status} />
+
       <QuestionBuilder
         roomId={room.id}
         roomSlug={slug}
         roomStatus={room.status}
         initialQuestions={existingQuestions}
       />
+
       <CompletionCount roomId={room.id} roomStatus={room.status} />
+
       <div className="flex gap-3 flex-wrap">
         <OpenRoomButton
           roomId={room.id}
@@ -53,6 +65,7 @@ export default async function ManageQuestionsPage({
           approvedMemberCount={approvedMemberCount}
         />
         <CloseVotingButton roomId={room.id} roomSlug={slug} roomStatus={room.status} />
+        <ReopenVotingButton roomId={room.id} roomStatus={room.status} />
       </div>
     </main>
   )

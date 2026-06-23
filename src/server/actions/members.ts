@@ -24,7 +24,8 @@ export async function approveMember(formData: FormData) {
   })
 
   if (!room || room.ownerId !== session.user.id) return { error: 'Unauthorized' }
-
+  if (room.joinLocked) return { error: 'This room is no longer accepting new members' }
+  
   await db
     .update(roomMembers)
     .set({ status: 'approved', approvedAt: new Date() })

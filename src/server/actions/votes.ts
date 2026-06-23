@@ -3,7 +3,7 @@
 import { db } from '@/server/db'
 import { votes, voteSelections, nameListEntries } from '@/server/db/schema/votes'
 import { rooms, roomMembers } from '@/server/db/schema/rooms'
-import { questions } from '@/server/db/schema/questions'
+import { questions, questionSets } from '@/server/db/schema/questions'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { eq, and } from 'drizzle-orm'
@@ -37,6 +37,12 @@ export async function submitVotes({
   })
 
   if (!member || member.status !== 'approved') return { error: 'Not authorized to vote' }
+
+  if (!room.joinLocked) {
+    await db.update(rooms)
+      .set({ joinLocked: true })
+      .where(eq(rooms.id, roomId))
+  }
 
   for (const [questionId, selections] of Object.entries(answers)) {
     if (!selections.length) continue

@@ -1,7 +1,7 @@
 import { relations } from 'drizzle-orm'
 import { rooms, roomMembers } from './rooms'
 import { questionSets, questions } from './questions'
-import { nameListEntries, votes, voteSelections } from './votes'
+import { nameListEntries, votes, voteSelections, resultViews } from './votes'
 import { user } from './auth'
 import { permissionBundles, coOwnerPermissions } from './permissions'
 
@@ -58,4 +58,8 @@ export const coOwnerPermissionRelations = relations(coOwnerPermissions, ({ one }
   room: one(rooms, { fields: [coOwnerPermissions.roomId], references: [rooms.id] }),
   user: one(user, { fields: [coOwnerPermissions.userId], references: [user.id] }),
   permissionBundle: one(permissionBundles, { fields: [coOwnerPermissions.permissionBundleId], references: [permissionBundles.id] }),
+}))
+
+export const resultViewRelations = relations(resultViews, ({ one }) => ({
+  room: one(rooms, { fields: [resultViews.roomId], references: [rooms.id] }),
 }))

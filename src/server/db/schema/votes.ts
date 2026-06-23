@@ -2,6 +2,7 @@ import { pgTable, text, timestamp, integer } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2'
 import { questions } from './questions'
 import { roomMembers } from './rooms'
+import { rooms } from './rooms'
 
 export const nameListEntries = pgTable('name_list_entries', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
@@ -23,4 +24,11 @@ export const voteSelections = pgTable('vote_selections', {
   voteId: text('vote_id').notNull().references(() => votes.id),
   nameEntryId: text('name_entry_id').notNull().references(() => nameListEntries.id),
   groupAnswerIndex: integer('group_answer_index'),
+})
+
+export const resultViews = pgTable('result_views', {
+  id: text('id').primaryKey().$defaultFn(() => createId()),
+  roomId: text('room_id').notNull().references(() => rooms.id),
+  userId: text('user_id').notNull(),
+  viewedAt: timestamp('viewed_at').notNull().defaultNow(),
 })
