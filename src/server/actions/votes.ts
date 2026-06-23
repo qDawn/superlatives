@@ -43,6 +43,16 @@ export async function submitVotes({
       .set({ joinLocked: true })
       .where(eq(rooms.id, roomId))
   }
+  for (const [questionId, selections] of Object.entries(answers)) {
+  const question = await db.query.questions.findFirst({
+    where: eq(questions.id, questionId),
+  })
+  if (!question) continue
+  if (!question.isSkippable && (!selections || selections.length === 0)) {
+    return { error: `All required questions must be answered` }
+  }
+}
+
 
   for (const [questionId, selections] of Object.entries(answers)) {
     if (!selections.length) continue

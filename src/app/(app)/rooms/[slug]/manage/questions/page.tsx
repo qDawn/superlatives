@@ -63,6 +63,7 @@ export default async function ManageQuestionsPage({
           roomId={room.id}
           roomStatus={room.status}
           approvedMemberCount={approvedMemberCount}
+          ownerParticipates={room.ownerParticipates}
         />
         <CloseVotingButton roomId={room.id} roomSlug={slug} roomStatus={room.status} />
         <ReopenVotingButton roomId={room.id} roomStatus={room.status} />

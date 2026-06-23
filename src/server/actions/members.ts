@@ -89,11 +89,12 @@ export async function joinRoom(_prevState: unknown, formData: FormData) {
     headers: await headers(),
   })
   if (!session) return { error: 'You must be logged in to join a room' }
-
+  
   const roomId = formData.get('roomId') as string
   const roomSlug = formData.get('roomSlug') as string
-  const displayName = (formData.get('displayName') as string)?.trim()
-
+  const displayName = (formData.get('displayName') as string)?.trim().replace(/\s+/g, ' ')
+if (!displayName || displayName.length < 1) return { error: 'Display name cannot be empty' }
+if (displayName.length > 50) return { error: 'Display name must be 50 characters or less' }
   if (!displayName) return { error: 'Display name is required' }
 
   const room = await db.query.rooms.findFirst({
