@@ -1,6 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { motion, AnimatePresence } from 'motion/react'
 
 type TallyEntry = {
   label: string
@@ -23,37 +26,64 @@ export default function ResultsCharts({
   const [chartType, setChartType] = useState<'bar' | 'pie'>('bar')
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex gap-2">
-        <button
+        <Button
+          size="sm"
+          variant={chartType === 'bar' ? 'default' : 'outline'}
           onClick={() => setChartType('bar')}
-          className={`rounded-md px-3 py-1 text-sm border ${
-            chartType === 'bar' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
-          }`}
         >
           Bar chart
-        </button>
-        <button
+        </Button>
+        <Button
+          size="sm"
+          variant={chartType === 'pie' ? 'default' : 'outline'}
           onClick={() => setChartType('pie')}
-          className={`rounded-md px-3 py-1 text-sm border ${
-            chartType === 'pie' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent'
-          }`}
         >
           Pie chart
-        </button>
+        </Button>
       </div>
 
-      {results.map(({ question, tally }) => (
-        <div key={question.id} className="space-y-3 rounded-lg border p-4">
-          <p className="font-medium text-sm">{question.text}</p>
-          {tally.length === 0 ? (
-            <p className="text-xs text-muted-foreground">No votes.</p>
-          ) : chartType === 'bar' ? (
-            <BarChart tally={tally} />
-          ) : (
-            <PieChart tally={tally} />
-          )}
-        </div>
+      {results.map(({ question, tally }, idx) => (
+        <motion.div
+          key={question.id}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: idx * 0.05 }}
+        >
+          <Card>
+            <CardContent className="pt-4 space-y-4">
+              <p className="font-medium text-sm">{question.text}</p>
+              {tally.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No votes.</p>
+              ) : (
+                <AnimatePresence mode="wait">
+                  {chartType === 'bar' ? (
+                    <motion.div
+                      key="bar"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <BarChart tally={tally} />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="pie"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <PieChart tally={tally} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
       ))}
     </div>
   )
@@ -62,17 +92,19 @@ export default function ResultsCharts({
 function BarChart({ tally }: { tally: TallyEntry[] }) {
   const max = Math.max(...tally.map(t => t.count))
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {tally.map((entry, i) => (
-        <div key={i} className="space-y-1">
+        <div key={i} className="space-y-1.5">
           <div className="flex justify-between text-xs">
-            <span>{entry.label}</span>
-            <span className="text-muted-foreground">{entry.count}</span>
+            <span className="font-medium">{entry.label}</span>
+            <span className="text-muted-foreground">{entry.count} vote{entry.count !== 1 ? 's' : ''}</span>
           </div>
-          <div className="h-2 w-full rounded-full bg-secondary">
-            <div
-              className="h-2 rounded-full bg-primary transition-all"
-              style={{ width: `${(entry.count / max) * 100}%` }}
+          <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+            <motion.div
+              className="h-2 rounded-full bg-primary"
+              initial={{ width: 0 }}
+              animate={{ width: `${(entry.count / max) * 100}%` }}
+              transition={{ duration: 0.6, delay: i * 0.05, ease: 'easeOut' }}
             />
           </div>
         </div>
@@ -109,7 +141,7 @@ function PieChart({ tally }: { tally: TallyEntry[] }) {
   }
 
   return (
-    <div className="flex gap-6 items-center flex-wrap">
+    <div className="flex gap-8 items-center flex-wrap">
       <svg width="160" height="160" viewBox="0 0 160 160">
         {slices.map((slice, i) => (
           <path
@@ -117,15 +149,18 @@ function PieChart({ tally }: { tally: TallyEntry[] }) {
             d={describeArc(slice.start, slice.start + slice.pct, 70)}
             fill={slice.color}
             stroke="white"
-            strokeWidth="1"
+            strokeWidth="2"
           />
         ))}
       </svg>
-      <div className="space-y-1">
+      <div className="space-y-2">
         {slices.map((slice, i) => (
           <div key={i} className="flex items-center gap-2 text-xs">
             <div className="h-3 w-3 rounded-sm flex-shrink-0" style={{ background: slice.color }} />
-            <span>{slice.label} — {slice.count} ({Math.round(slice.pct * 100)}%)</span>
+            <span>
+              <span className="font-medium">{slice.label}</span>
+              {' '}— {slice.count} ({Math.round(slice.pct * 100)}%)
+            </span>
           </div>
         ))}
       </div>
