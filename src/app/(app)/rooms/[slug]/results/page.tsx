@@ -4,8 +4,8 @@ import { headers } from 'next/headers'
 import { getRoomBySlug } from '@/server/queries/rooms'
 import { getResults, recordResultView } from '@/server/queries/votes'
 import { db } from '@/server/db'
-import { roomMembers, rooms } from '@/server/db/schema/rooms'
-import { votes, voteSelections } from '@/server/db/schema/votes'
+import { roomMembers } from '@/server/db/schema/rooms'
+import { votes, nameListEntries } from '@/server/db/schema/votes'
 import { eq, and } from 'drizzle-orm'
 import ResultsCharts from './results-charts'
 import Link from 'next/link'
@@ -48,14 +48,15 @@ export default async function ResultsPage({
 
   const isOwner = room.ownerId === session.user.id
 
-  if (!isOwner) {
-    const member = await db.query.roomMembers.findFirst({
-      where: and(
-        eq(roomMembers.roomId, room.id),
-        eq(roomMembers.userId, session.user.id)
-      ),
-    })
-    if (!member || member.status !== 'approved') redirect('/dashboard')
+  const member = await db.query.roomMembers.findFirst({
+    where: and(
+      eq(roomMembers.roomId, room.id),
+      eq(roomMembers.userId, session.user.id)
+    ),
+  })
+
+  if (!isOwner && (!member || member.status !== 'approved')) {
+    redirect('/dashboard')
   }
 
   await recordResultView(room.id, session.user.id)
@@ -70,25 +71,19 @@ export default async function ResultsPage({
     )
   }
 
-  const member = await db.query.roomMembers.findFirst({
-    where: and(
-      eq(roomMembers.roomId, room.id),
-      eq(roomMembers.userId, session.user.id)
-    ),
-  })
-
   const myVotes: Record<string, string[]> = {}
 
   if (member) {
+    const nameList = await db.query.nameListEntries.findMany({
+      where: eq(nameListEntries.roomId, room.id),
+    })
+
     const myVoteRows = await db.query.votes.findMany({
       where: eq(votes.voterMemberId, member.id),
       with: { voteSelections: true },
     })
 
     for (const vote of myVoteRows) {
-      const nameList = await db.query.nameListEntries.findMany({
-        where: eq(votes.questionId, vote.questionId),
-      })
       myVotes[vote.questionId] = vote.voteSelections.map(sel => {
         const entry = nameList.find(n => n.id === sel.nameEntryId)
         return entry?.displayName ?? sel.nameEntryId
