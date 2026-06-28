@@ -5,8 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { signOut, useSession } from '@/lib/auth-client'
 import { useState, useRef, useEffect } from 'react'
 import { useTheme } from 'next-themes'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { motion, AnimatePresence } from 'motion/react'
 
@@ -72,6 +71,7 @@ export default function Nav() {
               className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
             >
               <Avatar className="size-6">
+                <AvatarImage src={session.user.image ?? undefined} alt={session.user.name} />
                 <AvatarFallback className="text-xs">
                   {session.user.name?.[0]?.toUpperCase() ?? '?'}
                 </AvatarFallback>
@@ -95,9 +95,17 @@ export default function Nav() {
                   transition={{ duration: 0.15, ease: 'easeOut' }}
                   className="absolute right-0 top-11 w-56 rounded-lg border bg-popover shadow-md z-50"
                 >
-                  <div className="px-3 py-2.5">
-                    <p className="text-xs font-medium truncate">{session.user.name}</p>
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">{session.user.email}</p>
+                  <div className="px-3 py-2.5 flex items-center gap-3">
+                    <Avatar className="size-8">
+                      <AvatarImage src={session.user.image ?? undefined} alt={session.user.name} />
+                      <AvatarFallback className="text-sm">
+                        {session.user.name?.[0]?.toUpperCase() ?? '?'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium truncate">{session.user.name}</p>
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">{session.user.email}</p>
+                    </div>
                   </div>
                   <Separator />
                   <div className="p-1">
