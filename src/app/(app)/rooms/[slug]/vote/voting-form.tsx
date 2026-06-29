@@ -174,7 +174,7 @@ export default function VotingForm({
                     Pick {q.maxSelections} people to form a group, then confirm.
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {nameList.map(n => {
+                    {(nameListPerQuestion[q.id] ?? nameList).map(n => {
                       const picks = groupPick[q.id] ?? []
                       const selected = picks.includes(n.id)
                       return (
@@ -233,7 +233,7 @@ export default function VotingForm({
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  {nameList.map(n => {
+                  {(nameListPerQuestion[q.id] ?? nameList).map(n => {
                     const selected = (answers[q.id] ?? []).includes(n.id)
                     return (
                       <button
