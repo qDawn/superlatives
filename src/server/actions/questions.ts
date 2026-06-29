@@ -236,3 +236,52 @@ export async function editQuestion(formData: FormData) {
 
   return { success: true }
 }
+export async function applyPreset(_prevState: unknown, formData: FormData) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+  if (!session) return { error: 'Unauthorized' }
+
+  const roomId = formData.get('roomId') as string
+  const questionsJson = formData.get('questionsJson') as string
+
+  const room = await db.query.rooms.findFirst({
+    where: eq(rooms.id, roomId),
+  })
+
+  if (!room || room.ownerId !== session.user.id) return { error: 'Unauthorized' }
+  if (room.status !== 'draft') return { error: 'Room is already open' }
+
+  const parsed = JSON.parse(questionsJson)
+
+  let questionSet = await db.query.questionSets.findFirst({
+    where: eq(questionSets.roomId, roomId),
+  })
+
+  if (!questionSet) {
+    const [newSet] = await db.insert(questionSets).values({
+      roomId,
+      createdBy: session.user.id,
+    }).returning()
+    questionSet = newSet
+  }
+
+  const existingCount = await db.query.questions.findMany({
+    where: eq(questions.questionSetId, questionSet.id),
+  })
+
+  for (const q of parsed) {
+    await db.insert(questions).values({
+      questionSetId: questionSet.id,
+      text: q.text.trim().slice(0, 500),
+      questionType: q.questionType,
+      maxSelections: q.maxSelections,
+      displayOrder: existingCount.length + q.displayOrder,
+      isSkippable: q.isSkippable,
+      shuffleOptions: q.shuffleOptions,
+      allowMultipleGroupAnswers: q.allowMultipleGroupAnswers,
+    })
+  }
+
+  return { success: true, count: parsed.length }
+}

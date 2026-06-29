@@ -3,6 +3,8 @@
 import { useState, useRef } from 'react'
 import { toast } from 'sonner'
 import { exportQuestionSet, importQuestionSet } from '@/server/actions/questions'
+import { Button, buttonVariants } from '@/components/ui/button'
+import Link from 'next/link'
 
 export default function ExportImport({
   roomId,
@@ -62,14 +64,23 @@ export default function ExportImport({
 
   return (
     <div className="flex gap-2 flex-wrap">
-      <button
+      <Button
+        size="sm"
+        variant="outline"
         onClick={handleExport}
-        className="rounded-md border px-3 py-1.5 text-xs hover:bg-accent"
       >
         Export JSON
-      </button>
-      <label className="rounded-md border px-3 py-1.5 text-xs hover:bg-accent cursor-pointer">
-        {importing ? 'Importing...' : 'Import JSON'}
+      </Button>
+      <label>
+        <Button
+          size="sm"
+          variant="outline"
+          type="button"
+          disabled={importing}
+          onClick={() => fileRef.current?.click()}
+        >
+          {importing ? 'Importing...' : 'Import JSON'}
+        </Button>
         <input
           ref={fileRef}
           type="file"
@@ -79,6 +90,13 @@ export default function ExportImport({
           disabled={importing}
         />
       </label>
+      <Link
+        href="/question-sets"
+        className={buttonVariants({ variant: 'outline', size: 'sm' })}
+        target="_blank"
+      >
+        Browse presets
+      </Link>
     </div>
   )
 }

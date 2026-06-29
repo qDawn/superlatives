@@ -10,6 +10,8 @@ import CompletionCount from './completion-count'
 import ExportImport from './export-import'
 import OwnerParticipationToggle from './owner-participation-toggle'
 import ReopenVotingButton from './reopen-voting-button'
+import PresetPicker from './preset-picker'
+import presetsData from './public/seed/question-set-presets.json'
 
 export default async function ManageQuestionsPage({
   params,
@@ -48,7 +50,13 @@ export default async function ManageQuestionsPage({
       />
 
       <ExportImport roomId={room.id} roomStatus={room.status} />
-
+      <PresetPicker
+        roomId={room.id}
+        roomStatus={room.status}
+        presets={presetsData}
+        onApplied={() => {}}
+      />
+      
       <QuestionBuilder
         roomId={room.id}
         roomSlug={slug}

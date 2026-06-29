@@ -1,0 +1,57 @@
+[
+  {
+    "name": "Classic Party Pack",
+    "description": "The timeless superlatives everyone knows and loves.",
+    "questions": [
+      { "text": "Most likely to be late to their own wedding", "questionType": "single_select", "maxSelections": 1, "displayOrder": 0, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to become famous", "questionType": "single_select", "maxSelections": 1, "displayOrder": 1, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to survive a zombie apocalypse", "questionType": "single_select", "maxSelections": 1, "displayOrder": 2, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to accidentally start a cult", "questionType": "single_select", "maxSelections": 1, "displayOrder": 3, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to win a Nobel Prize", "questionType": "single_select", "maxSelections": 1, "displayOrder": 4, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to go viral for something embarrassing", "questionType": "single_select", "maxSelections": 1, "displayOrder": 5, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Best duo in the group", "questionType": "group_combination", "maxSelections": 2, "displayOrder": 6, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to still be partying at 80", "questionType": "single_select", "maxSelections": 1, "displayOrder": 7, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false }
+    ]
+  },
+  {
+    "name": "Office Pack",
+    "description": "Workplace superlatives — keep it professional... mostly.",
+    "questions": [
+      { "text": "Most likely to reply all by accident", "questionType": "single_select", "maxSelections": 1, "displayOrder": 0, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to become CEO", "questionType": "single_select", "maxSelections": 1, "displayOrder": 1, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to eat someone else's lunch from the fridge", "questionType": "single_select", "maxSelections": 1, "displayOrder": 2, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Best power duo for a startup", "questionType": "group_combination", "maxSelections": 2, "displayOrder": 3, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to still be on a call when the fire alarm goes off", "questionType": "single_select", "maxSelections": 1, "displayOrder": 4, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to accidentally share their screen at the worst moment", "questionType": "single_select", "maxSelections": 1, "displayOrder": 5, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to turn a 5-minute meeting into an hour", "questionType": "single_select", "maxSelections": 1, "displayOrder": 6, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Top 3 people you'd want on your team for a hackathon", "questionType": "multi_select", "maxSelections": 3, "displayOrder": 7, "isSkippable": true, "shuffleOptions": true, "allowMultipleGroupAnswers": false }
+    ]
+  },
+  {
+    "name": "Wedding / Bachelor Pack",
+    "description": "For the big occasion — sentimental and slightly roasting.",
+    "questions": [
+      { "text": "Most likely to cry first at the ceremony", "questionType": "single_select", "maxSelections": 1, "displayOrder": 0, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to give the most embarrassing speech", "questionType": "single_select", "maxSelections": 1, "displayOrder": 1, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to be the last one on the dance floor", "questionType": "single_select", "maxSelections": 1, "displayOrder": 2, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to accidentally wear the wrong outfit", "questionType": "single_select", "maxSelections": 1, "displayOrder": 3, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Best wedding date duo", "questionType": "group_combination", "maxSelections": 2, "displayOrder": 4, "isSkippable": true, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to lose the rings", "questionType": "single_select", "maxSelections": 1, "displayOrder": 5, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to propose a toast that goes on too long", "questionType": "single_select", "maxSelections": 1, "displayOrder": 6, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false }
+    ]
+  },
+  {
+    "name": "University Pack",
+    "description": "For the student experience — lectures, deadlines, and chaos.",
+    "questions": [
+      { "text": "Most likely to submit an assignment at 11:59pm", "questionType": "single_select", "maxSelections": 1, "displayOrder": 0, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to become a lecturer", "questionType": "single_select", "maxSelections": 1, "displayOrder": 1, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to have never attended a 9am lecture", "questionType": "single_select", "maxSelections": 1, "displayOrder": 2, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Best study duo", "questionType": "group_combination", "maxSelections": 2, "displayOrder": 3, "isSkippable": true, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to have read all the readings", "questionType": "single_select", "maxSelections": 1, "displayOrder": 4, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to start a society no one attends", "questionType": "single_select", "maxSelections": 1, "displayOrder": 5, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Most likely to accidentally plagiarise themselves", "questionType": "single_select", "maxSelections": 1, "displayOrder": 6, "isSkippable": false, "shuffleOptions": true, "allowMultipleGroupAnswers": false },
+      { "text": "Top 3 people you'd want in your group project", "questionType": "multi_select", "maxSelections": 3, "displayOrder": 7, "isSkippable": true, "shuffleOptions": true, "allowMultipleGroupAnswers": false }
+    ]
+  }
+]
