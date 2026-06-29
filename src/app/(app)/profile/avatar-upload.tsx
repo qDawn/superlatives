@@ -13,7 +13,9 @@ export default function AvatarUpload({
   currentImage: string | null
   name: string
 }) {
-  const [preview, setPreview] = useState<string | null>(currentImage)
+  const [preview, setPreview] = useState<string | null>(
+    currentImage ? `${currentImage}?t=${Date.now()}` : null
+  )
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
@@ -32,7 +34,8 @@ export default function AvatarUpload({
       return
     }
 
-    setPreview(URL.createObjectURL(file))
+    const localPreview = URL.createObjectURL(file)
+    setPreview(localPreview)
     setUploading(true)
 
     const formData = new FormData()
@@ -49,8 +52,11 @@ export default function AvatarUpload({
       toast.error(data.error)
       setPreview(currentImage)
     } else {
-      toast.success('Profile picture updated')
-      router.refresh()
+        toast.success('Profile picture updated')
+        setPreview(`${data.url}?t=${Date.now()}`)
+        setTimeout(() => {
+            window.location.reload()
+        }, 1000)
     }
 
     setUploading(false)

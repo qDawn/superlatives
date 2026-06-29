@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
 
   const blob = await put(filename, file, {
     access: 'public',
+    allowOverwrite: true,
   })
 
   await db.update(user)
