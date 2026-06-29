@@ -11,6 +11,7 @@ import { eq , and } from 'drizzle-orm'
 import { z } from 'zod'
 import { resultViews } from '@/server/db/schema/votes'
 import { user } from '@/server/db/schema/auth'
+import { sendResultsReadyEmail } from '@/lib/email'
 
 const createRoomSchema = z.object({
   name: z.string().min(1).max(100),
@@ -145,6 +146,11 @@ export async function closeVoting(_prevState: unknown, formData: FormData) {
 
   const room = await db.query.rooms.findFirst({
     where: eq(rooms.id, roomId),
+    with: {
+      roomMembers: {
+        where: (members, { eq: eqFn }) => eqFn(members.status, 'approved'),
+      },
+    },
   })
 
   if (!room || room.ownerId !== session.user.id) return { error: 'Unauthorized' }
@@ -153,6 +159,20 @@ export async function closeVoting(_prevState: unknown, formData: FormData) {
   await db.update(rooms)
     .set({ status: 'closed', votingClosedAt: new Date() })
     .where(eq(rooms.id, roomId))
+
+  for (const member of room.roomMembers) {
+    const memberUser = await db.query.user.findFirst({
+      where: eq(user.id, member.userId),
+    })
+    if (memberUser) {
+      await sendResultsReadyEmail({
+        to: memberUser.email,
+        displayName: member.displayName,
+        roomName: room.name,
+        roomSlug: room.slug,
+      }).catch(err => console.error('Failed to send results email:', err))
+    }
+  }
 
   revalidatePath(`/rooms/${room.slug}/manage/questions`)
   return { success: true }

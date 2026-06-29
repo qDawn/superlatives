@@ -93,3 +93,36 @@ export async function sendPasswordResetEmail({
     `,
   })
 }
+export async function sendResultsReadyEmail({
+  to,
+  displayName,
+  roomName,
+  roomSlug,
+}: {
+  to: string
+  displayName: string
+  roomName: string
+  roomSlug: string
+}) {
+  const url = `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL}/rooms/${roomSlug}/results`
+
+  await resend.emails.send({
+    from: FROM,
+    to,
+    subject: `Results are in for ${roomName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
+        <h2 style="font-size: 20px; font-weight: 500; margin-bottom: 8px;">Results are in, ${displayName}!</h2>
+        <p style="color: #666; font-size: 14px; margin-bottom: 24px;">
+          Voting has closed for <strong>${roomName}</strong>. Click below to see how everyone voted.
+        </p>
+        <a href="${url}" style="display: inline-block; background: #000; color: #fff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px;">
+          View results
+        </a>
+        <p style="color: #999; font-size: 12px; margin-top: 24px;">
+          If you didn't participate in this room, you can ignore this email.
+        </p>
+      </div>
+    `,
+  })
+}
