@@ -61,8 +61,19 @@ export default async function VotePage({
   }
 
   const questionSet = room.questionSets?.[0]
-  const questions = questionSet?.questions ?? []
+  let questions = questionSet?.questions ?? []
   const nameList = await getNameList(room.id)
+
+  if (questionSet?.shuffleQuestions) {
+    questions = [...questions].sort(() => Math.random() - 0.5)
+  }
+
+  const nameListPerQuestion: Record<string, typeof nameList> = {}
+  for (const q of questions) {
+    nameListPerQuestion[q.id] = q.shuffleOptions
+      ? [...nameList].sort(() => Math.random() - 0.5)
+      : nameList
+  }
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-12">
@@ -72,6 +83,7 @@ export default async function VotePage({
         roomSlug={slug}
         roomId={room.id}
         nameList={nameList}
+        nameListPerQuestion={nameListPerQuestion}
       />
     </main>
   )

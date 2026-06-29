@@ -28,12 +28,14 @@ export default function VotingForm({
   roomSlug,
   roomId,
   nameList,
+  nameListPerQuestion,
 }: {
   questions: Question[]
   memberId: string
   roomSlug: string
   roomId: string
   nameList: NameEntry[]
+  nameListPerQuestion: Record<string, NameEntry[]>
 }) {
   const [answers, setAnswers] = useState<Record<string, string[]>>({})
   const [groupPick, setGroupPick] = useState<Record<string, string[]>>({})
