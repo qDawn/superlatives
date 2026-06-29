@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { db } from '@/server/db'
 import { rooms, roomMembers } from '@/server/db/schema/rooms'
+import { user } from '@/server/db/schema/auth'
 import { eq } from 'drizzle-orm'
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
@@ -15,6 +16,12 @@ export default async function DashboardPage() {
   })
 
   if (!session) redirect('/login')
+
+  const dbUser = await db.query.user.findFirst({
+    where: eq(user.id, session.user.id),
+  })
+
+  const isAdmin = dbUser?.siteRole === 'super_admin'
 
   const myRooms = await db.query.rooms.findMany({
     where: eq(rooms.ownerId, session.user.id),
@@ -132,11 +139,13 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      <div className="pt-2 border-t">
-        <Link href="/admin/dashboard" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-          Admin dashboard →
-        </Link>
-      </div>
+      {isAdmin && (
+        <div className="pt-2 border-t">
+          <Link href="/admin/dashboard" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+            Admin dashboard →
+          </Link>
+        </div>
+      )}
     </main>
   )
 }
