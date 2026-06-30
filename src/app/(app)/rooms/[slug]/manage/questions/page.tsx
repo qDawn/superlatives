@@ -54,7 +54,6 @@ export default async function ManageQuestionsPage({
         roomId={room.id}
         roomStatus={room.status}
         presets={presetsData}
-        onApplied={() => {}}
       />
       
       <QuestionBuilder

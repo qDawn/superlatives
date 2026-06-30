@@ -28,12 +28,10 @@ export default function PresetPicker({
   roomId,
   roomStatus,
   presets,
-  onApplied,
 }: {
   roomId: string
   roomStatus: string
   presets: Preset[]
-  onApplied: (questions: Question[]) => void
 }) {
   const [open, setOpen] = useState(false)
   const [expanded, setExpanded] = useState<string | null>(null)
