@@ -5,6 +5,7 @@ import Nav from '@/components/nav'
 import { Toaster } from 'sonner'
 import Link from 'next/link'
 import { ThemeProvider } from '@/components/theme-provider'
+import CookieBanner from '@/components/cookie-banner'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -35,14 +36,20 @@ export default function RootLayout({
             {children}
           </div>
           <footer className="border-t px-4 py-6 text-xs text-muted-foreground">
-            <div className="mx-auto max-w-4xl flex items-center justify-between">
-              <span className="font-medium">Superlatives</span>
+          <div className="mx-auto max-w-4xl flex items-center justify-between flex-wrap gap-2">
+            <span>Superlatives</span>
+            <div className="flex gap-4">
               <Link href="/about" className="hover:text-foreground transition-colors">
                 About & Privacy
               </Link>
+              <Link href="/terms" className="hover:text-foreground transition-colors">
+                Terms
+              </Link>
             </div>
-          </footer>
+          </div>
+        </footer>
           <Toaster position="bottom-right" richColors />
+          <CookieBanner />
         </ThemeProvider>
       </body>
     </html>
