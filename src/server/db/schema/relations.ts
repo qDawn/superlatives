@@ -4,7 +4,27 @@ import { questionSets, questions } from './questions'
 import { nameListEntries, votes, voteSelections, resultViews } from './votes'
 import { user } from './auth'
 import { permissionBundles, coOwnerPermissions } from './permissions'
+import { communityPresets, presetVotes, presetFollows, presetDrafts } from './community'
 
+export const communityPresetRelations = relations(communityPresets, ({ one, many }) => ({
+  creator: one(user, { fields: [communityPresets.createdBy], references: [user.id] }),
+  votes: many(presetVotes),
+  follows: many(presetFollows),
+}))
+
+export const presetVoteRelations = relations(presetVotes, ({ one }) => ({
+  preset: one(communityPresets, { fields: [presetVotes.presetId], references: [communityPresets.id] }),
+  user: one(user, { fields: [presetVotes.userId], references: [user.id] }),
+}))
+
+export const presetFollowRelations = relations(presetFollows, ({ one }) => ({
+  preset: one(communityPresets, { fields: [presetFollows.presetId], references: [communityPresets.id] }),
+  user: one(user, { fields: [presetFollows.userId], references: [user.id] }),
+}))
+
+export const presetDraftRelations = relations(presetDrafts, ({ one }) => ({
+  creator: one(user, { fields: [presetDrafts.createdBy], references: [user.id] }),
+}))
 export const userRelations = relations(user, ({ many }) => ({
   ownedRooms: many(rooms),
   roomMembers: many(roomMembers),

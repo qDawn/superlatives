@@ -12,6 +12,7 @@ import OwnerParticipationToggle from './owner-participation-toggle'
 import ReopenVotingButton from './reopen-voting-button'
 import PresetPicker from './preset-picker'
 import presetsData from '../../../../../../../public/seed/question-set-presets.json'
+import { getFollowedPresets } from '@/server/queries/community'
 
 export default async function ManageQuestionsPage({
   params,
@@ -33,6 +34,7 @@ export default async function ManageQuestionsPage({
   const members = await getRoomMembers(room.id)
   const approvedMemberCount = members.filter(m => m.status === 'approved').length
   const existingQuestions = await getRoomQuestions(room.id)
+  const followedPresets = await getFollowedPresets(session.user.id)
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10 space-y-8">
@@ -54,6 +56,7 @@ export default async function ManageQuestionsPage({
         roomId={room.id}
         roomStatus={room.status}
         presets={presetsData}
+        followedPresets={followedPresets}
       />
       
       <QuestionBuilder

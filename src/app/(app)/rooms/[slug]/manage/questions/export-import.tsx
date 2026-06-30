@@ -91,11 +91,11 @@ export default function ExportImport({
         />
       </label>
       <Link
-        href="/question-sets"
+        href="/community"
         className={buttonVariants({ variant: 'outline', size: 'sm' })}
         target="_blank"
       >
-        Browse presets
+        Browse community
       </Link>
     </div>
   )

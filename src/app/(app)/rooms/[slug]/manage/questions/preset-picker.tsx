@@ -24,14 +24,22 @@ type Preset = {
   questions: Question[]
 }
 
+type FollowedPreset = {
+  id: string
+  name: string
+  questions: Question[]
+}
+
 export default function PresetPicker({
   roomId,
   roomStatus,
   presets,
+  followedPresets,
 }: {
   roomId: string
   roomStatus: string
   presets: Preset[]
+  followedPresets: FollowedPreset[]
 }) {
   const [open, setOpen] = useState(false)
   const [expanded, setExpanded] = useState<string | null>(null)
@@ -133,6 +141,29 @@ export default function PresetPicker({
                   </CardContent>
                 </Card>
               ))}
+
+              {followedPresets.length > 0 && (
+                <div className="space-y-2 pt-2 border-t">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Your followed presets</p>
+                  {followedPresets.map(fp => (
+                    <Card key={fp.id}>
+                      <CardContent className="py-2.5 flex items-center justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-medium">{fp.name}</p>
+                          <p className="text-xs text-muted-foreground">{fp.questions.length} questions</p>
+                        </div>
+                        <Button
+                          size="sm"
+                          disabled={loading === fp.name}
+                          onClick={() => handleApply({ name: fp.name, description: '', questions: fp.questions })}
+                        >
+                          {loading === fp.name ? 'Applying...' : 'Use this preset'}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
         )}

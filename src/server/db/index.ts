@@ -6,6 +6,7 @@ import * as permissionSchema from './schema/permissions'
 import * as questionSchema from './schema/questions'
 import * as voteSchema from './schema/votes'
 import * as relations from './schema/relations'
+import * as communitySchema from './schema/community'
 
 const sql = neon(process.env.DATABASE_URL!)
 export const db = drizzle(sql, {
@@ -16,5 +17,6 @@ export const db = drizzle(sql, {
     ...questionSchema,
     ...voteSchema,
     ...relations,
+    ...communitySchema,
   }
 })

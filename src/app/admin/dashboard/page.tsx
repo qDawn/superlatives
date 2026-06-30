@@ -25,6 +25,13 @@ export default async function AdminDashboardPage() {
         </p>
       </div>
 
+      <Link
+        href="/admin/dashboard/community"
+        className="text-xs text-muted-foreground hover:text-foreground transition-colors block"
+      >
+        Manage community presets →
+      </Link>
+
       <div className="space-y-3">
         <h2 className="text-sm font-medium">All rooms ({rooms.length})</h2>
         {rooms.length === 0 && (

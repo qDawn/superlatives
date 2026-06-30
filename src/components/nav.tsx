@@ -38,7 +38,7 @@ export default function Nav() {
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard' },
     { href: '/rooms/new', label: 'New room' },
-    { href: '/question-sets', label: 'Presets' },
+    { href: '/community', label: 'Community' },
   ]
 
   return (
