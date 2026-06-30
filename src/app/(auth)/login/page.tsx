@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { signIn } from '@/lib/auth-client'
 import { motion } from 'motion/react'
@@ -10,8 +10,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') ?? '/dashboard'
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -27,7 +29,7 @@ export default function LoginPage() {
     const { error } = await signIn.email({
       email,
       password,
-      callbackURL: '/dashboard',
+      callbackURL: redirectTo,
     })
 
     if (error) {
@@ -36,7 +38,7 @@ export default function LoginPage() {
       return
     }
 
-    router.push('/dashboard')
+    router.push(redirectTo)
   }
 
   return (
@@ -92,5 +94,13 @@ export default function LoginPage() {
         </Card>
       </motion.div>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }
