@@ -11,7 +11,7 @@ import ExportImport from './export-import'
 import OwnerParticipationToggle from './owner-participation-toggle'
 import ReopenVotingButton from './reopen-voting-button'
 import PresetPicker from './preset-picker'
-import presetsData from './public/seed/question-set-presets.json'
+import presetsData from '../../../../../../../public/seed/question-set-presets.json'
 
 export default async function ManageQuestionsPage({
   params,
