@@ -2,6 +2,29 @@ import { db } from '@/server/db'
 import { roomMembers } from '@/server/db/schema/rooms'
 import { votes } from '@/server/db/schema/votes'
 import { eq, and, inArray } from 'drizzle-orm'
+import { coOwnerPermissions, permissionBundles } from '@/server/db/schema/permissions'
+import { user } from '@/server/db/schema/auth'
+
+export async function getCoOwners(roomId: string) {
+  const rows = await db.query.coOwnerPermissions.findMany({
+    where: eq(coOwnerPermissions.roomId, roomId),
+    with: {
+      user: true,
+      permissionBundle: true,
+    },
+  })
+
+  return rows.map(r => ({
+    id: r.id,
+    name: r.user.name,
+    email: r.user.email,
+    bundleName: r.permissionBundle.name,
+    canApproveMembers: r.permissionBundle.canApproveMembers,
+    canCloseVoting: r.permissionBundle.canCloseVoting,
+    canViewCompletionCount: r.permissionBundle.canViewCompletionCount,
+    canManageQuestionSet: r.permissionBundle.canManageQuestionSet,
+  }))
+}
 
 export async function getRoomMembers(roomId: string) {
   return db.query.roomMembers.findMany({

@@ -48,6 +48,7 @@ export default async function ManageLayout({
           { href: `/rooms/${slug}/manage/questions`, label: 'Questions' },
           { href: `/rooms/${slug}/manage/members`, label: 'Members' },
           { href: `/rooms/${slug}/results`, label: 'Results' },
+          { href: `/rooms/${slug}/manage/co-owners`, label: 'Co-owners' },
         ].map(link => (
           <Link
             key={link.href}
