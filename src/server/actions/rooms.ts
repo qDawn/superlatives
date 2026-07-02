@@ -2,16 +2,17 @@
 
 import { db } from '@/server/db'
 import { rooms, roomMembers } from '@/server/db/schema/rooms'
-import { nameListEntries } from '@/server/db/schema/votes'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { eq , and } from 'drizzle-orm'
 import { z } from 'zod'
-import { resultViews } from '@/server/db/schema/votes'
 import { user } from '@/server/db/schema/auth'
 import { sendResultsReadyEmail } from '@/lib/email'
+import { votes, voteSelections, nameListEntries, resultViews } from '@/server/db/schema/votes'
+import { questions, questionSets } from '@/server/db/schema/questions'
+import { coOwnerPermissions } from '@/server/db/schema/permissions'
 
 const createRoomSchema = z.object({
   name: z.string().min(1).max(100),
@@ -228,5 +229,45 @@ export async function reopenVoting(_prevState: unknown, formData: FormData) {
     .where(eq(rooms.id, roomId))
 
   revalidatePath(`/rooms/${room.slug}/manage/questions`)
+  return { success: true }
+}
+export async function deleteRoom(formData: FormData) {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session) return { error: 'Unauthorized' }
+
+  const roomId = formData.get('roomId') as string
+
+  const room = await db.query.rooms.findFirst({
+    where: eq(rooms.id, roomId),
+  })
+
+  if (!room || room.ownerId !== session.user.id) return { error: 'Unauthorized' }
+
+  const questionSet = await db.query.questionSets.findFirst({
+    where: eq(questionSets.roomId, roomId),
+    with: { questions: true },
+  })
+
+  if (questionSet) {
+    for (const question of questionSet.questions) {
+      const questionVotes = await db.query.votes.findMany({
+        where: eq(votes.questionId, question.id),
+      })
+      for (const vote of questionVotes) {
+        await db.delete(voteSelections).where(eq(voteSelections.voteId, vote.id))
+      }
+      await db.delete(votes).where(eq(votes.questionId, question.id))
+    }
+    await db.delete(questions).where(eq(questions.questionSetId, questionSet.id))
+    await db.delete(questionSets).where(eq(questionSets.id, questionSet.id))
+  }
+
+  await db.delete(nameListEntries).where(eq(nameListEntries.roomId, roomId))
+  await db.delete(resultViews).where(eq(resultViews.roomId, roomId))
+  await db.delete(coOwnerPermissions).where(eq(coOwnerPermissions.roomId, roomId))
+  await db.delete(roomMembers).where(eq(roomMembers.roomId, roomId))
+  await db.delete(rooms).where(eq(rooms.id, roomId))
+
+  revalidatePath('/dashboard')
   return { success: true }
 }

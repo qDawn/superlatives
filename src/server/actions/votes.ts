@@ -1,12 +1,13 @@
 'use server'
 
 import { db } from '@/server/db'
-import { votes, voteSelections, nameListEntries } from '@/server/db/schema/votes'
+import { votes, voteSelections } from '@/server/db/schema/votes'
 import { rooms, roomMembers } from '@/server/db/schema/rooms'
-import { questions, questionSets } from '@/server/db/schema/questions'
+import { questions } from '@/server/db/schema/questions'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { eq, and } from 'drizzle-orm'
+import { voteRatelimit } from '@/lib/rate-limit'
 
 export async function submitVotes({
   answers,
@@ -21,6 +22,10 @@ export async function submitVotes({
     headers: await headers(),
   })
   if (!session) return { error: 'Unauthorized' }
+
+  const ip = (await headers()).get('x-forwarded-for') ?? '127.0.0.1'
+  const { success } = await voteRatelimit.limit(ip)
+  if (!success) return { error: 'Too many requests. Please slow down.' }
 
   const room = await db.query.rooms.findFirst({
     where: eq(rooms.id, roomId),
@@ -43,16 +48,16 @@ export async function submitVotes({
       .set({ joinLocked: true })
       .where(eq(rooms.id, roomId))
   }
-  for (const [questionId, selections] of Object.entries(answers)) {
-  const question = await db.query.questions.findFirst({
-    where: eq(questions.id, questionId),
-  })
-  if (!question) continue
-  if (!question.isSkippable && (!selections || selections.length === 0)) {
-    return { error: `All required questions must be answered` }
-  }
-}
 
+  for (const [questionId, selections] of Object.entries(answers)) {
+    const question = await db.query.questions.findFirst({
+      where: eq(questions.id, questionId),
+    })
+    if (!question) continue
+    if (!question.isSkippable && (!selections || selections.length === 0)) {
+      return { error: 'All required questions must be answered' }
+    }
+  }
 
   for (const [questionId, selections] of Object.entries(answers)) {
     if (!selections.length) continue

@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import LeaveRoomButton from './leave-room-button'
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -34,6 +35,9 @@ export default async function DashboardPage() {
     with: { room: true },
   })
 
+  const pendingMembers = joinedMembers.filter(m => m.status === 'pending')
+
+  
   const joinedRooms = joinedMembers
     .filter(m => m.status === 'approved' && !myRooms.find(r => r.id === m.roomId))
 
@@ -108,6 +112,29 @@ export default async function DashboardPage() {
         })}
       </div>
 
+      {pendingMembers.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Pending approval</h2>
+          {pendingMembers.map(m => (
+            <Card key={m.id}>
+              <CardContent className="py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium">{m.room.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Waiting for the host to approve your request
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="text-amber-600 border-amber-300 shrink-0">
+                    Pending
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
       {joinedRooms.length > 0 && (
         <div className="space-y-3">
           <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Rooms you've joined</h2>
@@ -126,12 +153,15 @@ export default async function DashboardPage() {
                       {m.room.status === 'draft' && 'Waiting for host to open voting'}
                     </p>
                   </div>
-                  <Link
-                    href={m.room.status === 'closed' ? `/rooms/${m.room.slug}/results` : `/rooms/${m.room.slug}/vote`}
-                    className={buttonVariants({ variant: 'outline', size: 'sm' }) + ' shrink-0'}
-                  >
-                    {m.room.status === 'closed' ? 'Results' : 'Vote'}
-                  </Link>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Link
+                      href={m.room.status === 'closed' ? `/rooms/${m.room.slug}/results` : `/rooms/${m.room.slug}/vote`}
+                      className={buttonVariants({ variant: 'outline', size: 'sm' })}
+                    >
+                      {m.room.status === 'closed' ? 'Results' : 'Vote'}
+                    </Link>
+                    <LeaveRoomButton roomId={m.room.id} />
+                  </div>
                 </div>
               </CardContent>
             </Card>

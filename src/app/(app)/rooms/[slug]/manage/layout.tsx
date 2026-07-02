@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { getRoomBySlug } from '@/server/queries/rooms'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
+import DeleteRoomButton from './delete-room-button'
 
 export default async function ManageLayout({
   children,
@@ -59,7 +60,9 @@ export default async function ManageLayout({
           </Link>
         ))}
       </nav>
-
+      <div className="flex justify-end">
+        <DeleteRoomButton roomId={room.id} />
+      </div>
       {children}
     </div>
   )

@@ -2,19 +2,24 @@
 
 import { db } from '@/server/db'
 import { roomMembers, rooms } from '@/server/db/schema/rooms'
-import { nameListEntries } from '@/server/db/schema/votes'
+import { nameListEntries, votes, voteSelections } from '@/server/db/schema/votes'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { eq, and } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { sendApprovalEmail } from '@/lib/email'
 import { user } from '@/server/db/schema/auth'
+import { joinRatelimit } from '@/lib/rate-limit'
 
 export async function approveMember(formData: FormData) {
   const session = await auth.api.getSession({
     headers: await headers(),
   })
   if (!session) return { error: 'Unauthorized' }
+
+  const ip = (await headers()).get('x-forwarded-for') ?? '127.0.0.1'
+  const { success } = await joinRatelimit.limit(ip)
+  if (!success) return { error: 'Too many requests. Please try again later.' }
 
   const memberId = formData.get('memberId') as string
   const roomId = formData.get('roomId') as string
@@ -90,6 +95,9 @@ export async function joinRoom(_prevState: unknown, formData: FormData) {
   })
   if (!session) return { error: 'You must be logged in to join a room' }
   
+  const ip = (await headers()).get('x-forwarded-for') ?? '127.0.0.1'
+  const { success } = await joinRatelimit.limit(ip)
+  if (!success) return { error: 'Too many requests. Please try again later.' }
   const roomId = formData.get('roomId') as string
   const roomSlug = formData.get('roomSlug') as string
   const displayName = (formData.get('displayName') as string)?.trim().replace(/\s+/g, ' ')
@@ -148,5 +156,44 @@ if (displayName.length > 50) return { error: 'Display name must be 50 characters
   }
 
   revalidatePath(`/rooms/${roomSlug}/manage/members`)
+  return { success: true }
+}
+
+export async function leaveRoom(formData: FormData) {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session) return { error: 'Unauthorized' }
+
+  const roomId = formData.get('roomId') as string
+
+  const member = await db.query.roomMembers.findFirst({
+    where: and(
+      eq(roomMembers.roomId, roomId),
+      eq(roomMembers.userId, session.user.id)
+    ),
+  })
+
+  if (!member) return { error: 'You are not a member of this room' }
+
+  const memberVotes = await db.query.votes.findMany({
+    where: eq(votes.voterMemberId, member.id),
+  })
+
+  for (const vote of memberVotes) {
+    await db.delete(voteSelections).where(eq(voteSelections.voteId, vote.id))
+  }
+  await db.delete(votes).where(eq(votes.voterMemberId, member.id))
+
+  const nameEntry = await db.query.nameListEntries.findFirst({
+    where: eq(nameListEntries.memberId, member.id),
+  })
+
+  if (nameEntry) {
+    await db.delete(voteSelections).where(eq(voteSelections.nameEntryId, nameEntry.id))
+    await db.delete(nameListEntries).where(eq(nameListEntries.memberId, member.id))
+  }
+
+  await db.delete(roomMembers).where(eq(roomMembers.id, member.id))
+
+  revalidatePath('/dashboard')
   return { success: true }
 }

@@ -29,7 +29,7 @@ export default function JoinForm({
         <p className="text-sm font-medium">
           {joinMode === 'auto'
             ? 'You have joined the room.'
-            : 'Request sent. The host will approve you shortly.'}
+            : 'Request sent. The host needs to approve you before you can vote. You will receive an email if approved or if your request expires after 7 days.'}
         </p>
         {joinMode === 'auto' && (
           <Link href={`/rooms/${roomSlug}/vote`} className={buttonVariants() + ' w-full justify-center'}>

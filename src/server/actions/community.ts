@@ -8,6 +8,7 @@ import { eq, and } from 'drizzle-orm'
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/lib/is-admin'
+import { publishRatelimit } from '@/lib/rate-limit'
 
 const questionSchema = z.object({
   text: z.string().min(1).max(500),
@@ -29,6 +30,10 @@ const publishSchema = z.object({
 export async function publishPreset(_prevState: unknown, formData: FormData) {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) return { error: 'Unauthorized' }
+  
+  const ip = (await headers()).get('x-forwarded-for') ?? '127.0.0.1'
+  const { success } = await publishRatelimit.limit(ip)
+  if (!success) return { error: 'Too many requests. Please try again later.' }
 
   const parsed = publishSchema.safeParse({
     name: formData.get('name'),
