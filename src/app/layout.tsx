@@ -6,6 +6,7 @@ import { Toaster } from 'sonner'
 import Link from 'next/link'
 import { ThemeProvider } from '@/components/theme-provider'
 import CookieBanner from '@/components/cookie-banner'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -50,6 +51,7 @@ export default function RootLayout({
         </footer>
           <Toaster position="bottom-right" richColors />
           <CookieBanner />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
