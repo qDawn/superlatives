@@ -132,8 +132,7 @@ function BarChart({ tally }: { tally: TallyEntry[] }) {
 function PieChart({ tally }: { tally: TallyEntry[] }) {
   const total = tally.reduce((sum, t) => sum + t.count, 0)
   const colors = [
-    '#7F77DD', '#1D9E75', '#D85A30', '#D4537E',
-    '#378ADD', '#639922', '#BA7517', '#E24B4A'
+    'var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)',
   ]
 
   let cumulative = 0
@@ -164,7 +163,7 @@ function PieChart({ tally }: { tally: TallyEntry[] }) {
             key={i}
             d={describeArc(slice.start, slice.start + slice.pct, 70)}
             fill={slice.color}
-            stroke="white"
+            stroke="var(--card)"
             strokeWidth="2"
           />
         ))}

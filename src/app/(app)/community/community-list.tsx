@@ -141,7 +141,7 @@ export default function CommunityList({
                       onClick={() => handleVote(preset.id, 'up')}
                       disabled={preset.isOwn}
                       className={`text-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
-                        preset.myVote === 'up' ? 'text-green-600' : 'text-muted-foreground hover:text-foreground'
+                        preset.myVote === 'up' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       ▲
@@ -151,7 +151,7 @@ export default function CommunityList({
                       onClick={() => handleVote(preset.id, 'down')}
                       disabled={preset.isOwn}
                       className={`text-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
-                        preset.myVote === 'down' ? 'text-red-600' : 'text-muted-foreground hover:text-foreground'
+                        preset.myVote === 'down' ? 'text-destructive' : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       ▼

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { SocialAuthButtons } from '@/components/social-auth-buttons'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -58,7 +59,8 @@ export default function SignupPage() {
               </Link>
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            <SocialAuthButtons />
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="displayName">Display name</Label>

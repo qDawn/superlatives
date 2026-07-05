@@ -63,7 +63,7 @@ export default function ModerationList({ presets }: { presets: AdminPreset[] }) 
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-sm font-medium">{p.name}</p>
                 <Badge variant="outline" className="text-xs">{p.visibility}</Badge>
-                {p.isUnpublished && <Badge variant="outline" className="text-xs text-amber-600">Unpublished</Badge>}
+                {p.isUnpublished && <Badge variant="outline" className="text-xs">Unpublished</Badge>}
               </div>
               <p className="text-xs text-muted-foreground">
                 {p.creatorName} · {p.creatorEmail} · {p.upvotes - p.downvotes} net votes

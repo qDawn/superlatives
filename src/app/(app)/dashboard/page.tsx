@@ -42,8 +42,8 @@ export default async function DashboardPage() {
     .filter(m => m.status === 'approved' && !myRooms.find(r => r.id === m.roomId))
 
   function StatusBadge({ status }: { status: string }) {
-    if (status === 'open') return <Badge className="bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20">Voting open</Badge>
-    if (status === 'closed') return <Badge className="bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20">Closed</Badge>
+    if (status === 'open') return <Badge className="bg-primary/10 text-primary border border-primary/20">Voting open</Badge>
+    if (status === 'closed') return <Badge variant="secondary">Closed</Badge>
     return <Badge variant="outline">Draft</Badge>
   }
 
@@ -51,7 +51,7 @@ export default async function DashboardPage() {
     <main className="mx-auto max-w-2xl px-4 py-10 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <h1 className="text-2xl font-semibold tracking-tight font-heading">Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{session.user.email}</p>
         </div>
         <div className="flex gap-2">
@@ -88,7 +88,7 @@ export default async function DashboardPage() {
                       <p className="text-sm font-medium">{room.name}</p>
                       <StatusBadge status={room.status} />
                       {pending > 0 && (
-                        <Badge variant="outline" className="text-amber-600 border-amber-300">
+                        <Badge variant="outline">
                           {pending} pending
                         </Badge>
                       )}
@@ -96,7 +96,7 @@ export default async function DashboardPage() {
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
                       <span>{approved} member{approved !== 1 ? 's' : ''}</span>
                       {room.status === 'closed' && (
-                        <Link href={`/rooms/${room.slug}/results`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                        <Link href={`/rooms/${room.slug}/results`} className="text-primary hover:underline">
                           View results →
                         </Link>
                       )}
@@ -125,7 +125,7 @@ export default async function DashboardPage() {
                       Waiting for the host to approve your request
                     </p>
                   </div>
-                  <Badge variant="outline" className="text-amber-600 border-amber-300 shrink-0">
+                  <Badge variant="outline" className="shrink-0">
                     Pending
                   </Badge>
                 </div>

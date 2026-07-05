@@ -26,15 +26,15 @@ export default async function ManageLayout({
   if (room.ownerId !== session.user.id) redirect('/dashboard')
 
   const statusColor =
-    room.status === 'open' ? 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20' :
-    room.status === 'closed' ? 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20' :
+    room.status === 'open' ? 'bg-primary/10 text-primary border-primary/20' :
+    room.status === 'closed' ? 'bg-secondary text-secondary-foreground border-transparent' :
     ''
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-6">
       <div className="space-y-1">
         <div className="flex items-center gap-3 flex-wrap">
-          <h1 className="text-2xl font-semibold tracking-tight">{room.name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight font-heading">{room.name}</h1>
           <Badge variant="outline" className={statusColor}>
             {room.status === 'draft' ? 'Draft' : room.status === 'open' ? 'Voting open' : 'Closed'}
           </Badge>

@@ -9,6 +9,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { motion, AnimatePresence } from 'motion/react'
 
+function LogoMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path d="M12 2L21 7.5V16.5L12 22L3 16.5V7.5L12 2Z" stroke="var(--primary)" strokeWidth="1.6" />
+      <path d="M12 8L16 10.3V14.7L12 17L8 14.7V10.3L12 8Z" fill="var(--primary)" />
+    </svg>
+  )
+}
+
 export default function Nav() {
   const pathname = usePathname()
   const router = useRouter()
@@ -45,7 +54,8 @@ export default function Nav() {
     <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-40">
       <div className="mx-auto max-w-4xl px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="font-semibold text-sm tracking-tight">
+          <Link href="/dashboard" className="flex items-center gap-2 font-heading font-semibold text-sm tracking-tight">
+            <LogoMark className="size-[18px]" />
             Superlatives
           </Link>
           <nav className="hidden sm:flex items-center gap-1">

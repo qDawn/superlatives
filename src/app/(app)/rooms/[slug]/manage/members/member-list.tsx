@@ -56,7 +56,7 @@ export default function MemberList({
           >
             <h2 className="text-sm font-medium">
               Pending approval{' '}
-              <Badge variant="outline" className="text-amber-600 border-amber-300 ml-1">
+              <Badge variant="outline" className="ml-1">
                 {pending.length}
               </Badge>
             </h2>
@@ -105,7 +105,7 @@ export default function MemberList({
               <Card>
                 <CardContent className="py-3 flex items-center justify-between gap-3">
                   <span className="text-sm">{m.displayName}</span>
-                  <Badge variant="outline" className="text-green-600 border-green-300">
+                  <Badge className="bg-primary/10 text-primary border-primary/20">
                     Approved
                   </Badge>
                 </CardContent>

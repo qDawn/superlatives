@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { SocialAuthButtons } from '@/components/social-auth-buttons'
 
 function LoginForm() {
   const router = useRouter()
@@ -59,7 +60,8 @@ function LoginForm() {
               </Link>
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            <SocialAuthButtons redirectTo={redirectTo} />
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
