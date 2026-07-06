@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { motion } from 'motion/react'
+import { deleteAccount } from '@/server/actions/profile'
+import { useRouter } from 'next/navigation'
 
 export default function ProfileForms({
   currentName,
@@ -20,6 +22,16 @@ export default function ProfileForms({
   const [nameState, nameAction, namePending] = useActionState(updateDisplayName, null)
   const [emailState, emailAction, emailPending] = useActionState(updateEmail, null)
   const [passwordState, passwordAction, passwordPending] = useActionState(updatePassword, null)
+  const router = useRouter()
+  const [deleteState, deleteAction, deletePending] = useActionState(deleteAccount, null)
+  const [confirming, setConfirming] = useState(false)
+
+  useEffect(() => {
+    if (deleteState?.success) {
+      router.push('/')
+    }
+    if (deleteState?.error) toast.error(deleteState.error)
+  }, [deleteState])
 
   useEffect(() => {
     if (nameState?.success) toast.success('Display name updated')
@@ -116,7 +128,42 @@ export default function ProfileForms({
             </Button>
           </form>
         </CardContent>
-      </Card>
+          </Card>
+          <Card>
+      <CardHeader>
+        <CardTitle className="text-base text-destructive">Delete account</CardTitle>
+        <CardDescription>
+          Permanently delete your account and all your data. This cannot be undone.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {!confirming ? (
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={() => setConfirming(true)}
+          >
+            Delete my account
+          </Button>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-sm text-destructive">
+              This will delete all your rooms, votes, and data permanently.
+            </p>
+            <div className="flex gap-2">
+              <form action={deleteAction}>
+                <Button type="submit" size="sm" variant="destructive" disabled={deletePending}>
+                  {deletePending ? 'Deleting...' : 'Yes, delete everything'}
+                </Button>
+              </form>
+              <Button size="sm" variant="outline" onClick={() => setConfirming(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
     </motion.div>
   )
 }
