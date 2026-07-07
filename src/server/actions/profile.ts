@@ -6,10 +6,12 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { rooms, roomMembers, coOwnerPermissions } from '@/server/db/schema/rooms'
+import { rooms, roomMembers } from '@/server/db/schema/rooms'
+import { coOwnerPermissions } from '@/server/db/schema/permissions'
 import { votes, voteSelections, nameListEntries, resultViews } from '@/server/db/schema/votes'
 import { questions, questionSets } from '@/server/db/schema/questions'
 import { communityPresets, presetVotes, presetFollows, presetDrafts } from '@/server/db/schema/community'
+
 
 export async function updateDisplayName(_prevState: unknown, formData: FormData) {
   const session = await auth.api.getSession({
@@ -140,6 +142,7 @@ export async function deleteAccount(_prevState: unknown, formData: FormData) {
   await db.delete(coOwnerPermissions).where(eq(coOwnerPermissions.userId, userId))
 
   await auth.api.deleteUser({
+    body : {},
     headers: await headers(),
   })
 
