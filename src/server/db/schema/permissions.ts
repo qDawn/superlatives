@@ -3,6 +3,7 @@ import { createId } from '@paralleldrive/cuid2'
 import { user } from './auth'
 import { rooms } from './rooms'
 
+
 export const permissionBundles = pgTable('permission_bundles', {
   id: text('id').primaryKey().$defaultFn(() => createId()),
   createdBy: text('created_by').notNull().references(() => user.id),
@@ -21,4 +22,13 @@ export const coOwnerPermissions = pgTable('co_owner_permissions', {
   userId: text('user_id').notNull().references(() => user.id),
   permissionBundleId: text('permission_bundle_id').notNull().references(() => permissionBundles.id),
   grantedAt: timestamp('granted_at').notNull().defaultNow(),
+})
+
+export const adminAccessLogs = pgTable('admin_access_logs', {
+  id: text('id').primaryKey().$defaultFn(() => createId()),
+  userId: text('user_id').notNull().references(() => user.id),
+  pathname: text('pathname').notNull(),
+  accessedAt: timestamp('accessed_at').notNull().defaultNow(),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
 })

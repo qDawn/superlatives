@@ -5,6 +5,7 @@ import { nameListEntries, votes, voteSelections, resultViews } from './votes'
 import { user } from './auth'
 import { permissionBundles, coOwnerPermissions } from './permissions'
 import { communityPresets, presetVotes, presetFollows, presetDrafts } from './community'
+import { adminAccessLogs } from './permissions'
 
 export const communityPresetRelations = relations(communityPresets, ({ one, many }) => ({
   creator: one(user, { fields: [communityPresets.createdBy], references: [user.id] }),
@@ -82,4 +83,8 @@ export const coOwnerPermissionRelations = relations(coOwnerPermissions, ({ one }
 
 export const resultViewRelations = relations(resultViews, ({ one }) => ({
   room: one(rooms, { fields: [resultViews.roomId], references: [rooms.id] }),
+}))
+
+export const adminAccessLogRelations = relations(adminAccessLogs, ({ one }) => ({
+  user: one(user, { fields: [adminAccessLogs.userId], references: [user.id] }),
 }))
