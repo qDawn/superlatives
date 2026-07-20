@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/is-admin'
 import { getRoomResultsWithIdentities } from '@/server/queries/admin'
 import { getRoomById } from '@/server/queries/rooms'
 import Link from 'next/link'
+import { logAdminAccess } from '@/lib/log-admin-access'
 
 export default async function AdminRoomPage({
   params,
@@ -12,6 +13,7 @@ export default async function AdminRoomPage({
   const { id: roomId } = await params
   const session = await requireAdmin()
   if (!session) redirect('/dashboard')
+  await logAdminAccess(session.user.id, `/admin/dashboard/rooms/${roomId}`)
 
   const room = await getRoomById(roomId)
   if (!room) redirect('/admin/dashboard')

@@ -2,12 +2,23 @@ import { redirect } from 'next/navigation'
 import { requireAdmin } from '@/lib/is-admin'
 import { getAllRooms, getAllUsers } from '@/server/queries/admin'
 import Link from 'next/link'
+import { logAdminAccess } from '@/lib/log-admin-access'
+import { adminAccessLogs } from '@/server/db/schema/permissions'
+import { db } from '@/server/db'
+import { desc } from 'drizzle-orm'
+
 
 export default async function AdminDashboardPage() {
   const session = await requireAdmin()
   if (!session) redirect('/dashboard')
+  await logAdminAccess(session.user.id, '/admin/dashboard')
 
   const rooms = await getAllRooms()
+  const recentLogs = await db.query.adminAccessLogs.findMany({
+    orderBy: desc(adminAccessLogs.accessedAt),
+    limit: 20,
+    with: { user: true },
+  })
   const users = await getAllUsers()
 
   return (
@@ -88,6 +99,25 @@ export default async function AdminDashboardPage() {
           </div>
         ))}
       </div>
+      <div className="space-y-3">
+  <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+    Recent admin access logs
+  </h2>
+  {recentLogs.length === 0 && (
+    <p className="text-sm text-muted-foreground">No access logs yet.</p>
+  )}
+  {recentLogs.map(log => (
+    <div key={log.id} className="flex items-center justify-between rounded-lg border px-4 py-2 text-xs">
+      <div className="space-y-0.5">
+        <p className="font-medium">{log.user.email}</p>
+        <p className="text-muted-foreground">{log.pathname}</p>
+      </div>
+      <p className="text-muted-foreground">
+        {new Date(log.accessedAt).toLocaleString()}
+      </p>
+    </div>
+  ))}
+</div>
     </div>
   )
 }

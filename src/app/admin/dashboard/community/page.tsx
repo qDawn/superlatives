@@ -3,10 +3,12 @@ import { requireAdmin } from '@/lib/is-admin'
 import { getAllCommunityPresetsForAdmin } from '@/server/queries/community'
 import ModerationList from './moderation-list'
 import Link from 'next/link'
+import { logAdminAccess } from '@/lib/log-admin-access'
 
 export default async function AdminCommunityPage() {
   const session = await requireAdmin()
   if (!session) redirect('/dashboard')
+  await logAdminAccess(session.user.id, '/admin/dashboard/community')
 
   const presets = await getAllCommunityPresetsForAdmin()
 
