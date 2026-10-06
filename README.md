@@ -1,39 +1,23 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Superlatives
 
-## Getting Started
+## Overview
 
-First, run the development server:
+Superlatives is a full-stack party game web app where hosts create rooms with superlative-style questions — "most likely to be late to their own wedding", "best duo", and so on. Participants join, cast their votes, and results are revealed only when the host closes voting. Built as a flagship portfolio project demonstrating full-stack TypeScript development, relational data modelling, and real-time UX.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Live at [superlatives-chi.vercel.app](https://superlatives-chi.vercel.app)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-
-
+| Layer | Technology |
+| --- | --- |
+| Framework | Next.js 16 (App Router, TypeScript) |
+| Database | Neon Postgres |
+| ORM | Drizzle ORM |
+| Auth | Better Auth |
+| UI | shadcn/ui (base-nova), Tailwind v4 |
+| Animations | Motion (motion/react) |
+| Email | Resend |
+| Rate limiting | Upstash Redis |
+| File storage | Vercel Blob |
+| Package manager | Bun |
+| Deployment | Vercel |
